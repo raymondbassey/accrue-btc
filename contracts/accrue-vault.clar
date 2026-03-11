@@ -156,3 +156,59 @@
     (ok true)
   )
 )
+
+;; --- Read-only functions ---
+
+(define-read-only (get-total-assets)
+  (ok (var-get total-assets))
+)
+
+(define-read-only (get-shares-of (who principal))
+  (contract-call? .vault-token get-balance who)
+)
+
+(define-read-only (get-asset-per-share (shares uint))
+  (let
+    (
+      (current-total (var-get total-assets))
+      (current-supply (unwrap-panic (contract-call? .vault-token get-total-supply)))
+    )
+    (ok (calculate-assets-for-shares shares current-total current-supply))
+  )
+)
+
+(define-read-only (get-deposit-of (who principal))
+  (ok (default-to u0 (map-get? deposits who)))
+)
+
+(define-read-only (get-vault-info)
+  (ok {
+    total-assets: (var-get total-assets),
+    total-shares: (unwrap-panic (contract-call? .vault-token get-total-supply)),
+    deposit-cap: (var-get deposit-cap),
+    paused: (var-get vault-paused),
+    strategist: (var-get strategist),
+  })
+)
+
+;; --- Private helpers ---
+
+;; Calculate shares to mint for a deposit
+;; If vault is empty, 1:1 ratio. Otherwise proportional to existing pool.
+(define-private (calculate-shares-for-deposit (amount uint) (total-assets-val uint) (total-supply uint))
+  ;; #[filter(amount, total-assets-val, total-supply)]
+  (if (is-eq total-supply u0)
+    amount  ;; First deposit: 1:1
+    (/ (* amount total-supply) total-assets-val)
+  )
+)
+
+;; Calculate sBTC to return for burning shares
+(define-private (calculate-assets-for-shares (shares uint) (total-assets-val uint) (total-supply uint))
+  ;; #[filter(shares, total-assets-val, total-supply)]
+  (if (is-eq total-supply u0)
+    u0
+    (/ (* shares total-assets-val) total-supply)
+  )
+)
+
