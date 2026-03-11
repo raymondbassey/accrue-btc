@@ -59,3 +59,46 @@
     (ft-burn? accrue-share amount owner)
   )
 )
+
+;; --- SIP-010 Interface ---
+(define-public (transfer
+    (amount uint)
+    (sender principal)
+    (recipient principal)
+    (memo (optional (buff 34)))
+  )
+  (begin
+    ;; #[filter(amount, recipient)]
+    (asserts! (or (is-eq tx-sender sender) (is-eq contract-caller sender))
+      ERR_NOT_TOKEN_OWNER
+    )
+    (try! (ft-transfer? accrue-share amount sender recipient))
+    (match memo to-print (print to-print) 0x)
+    (ok true)
+  )
+)
+
+(define-read-only (get-name)
+  (ok TOKEN_NAME)
+)
+
+(define-read-only (get-symbol)
+  (ok TOKEN_SYMBOL)
+)
+
+(define-read-only (get-decimals)
+  (ok TOKEN_DECIMALS)
+)
+
+(define-read-only (get-balance (who principal))
+  (ok (ft-get-balance accrue-share who))
+)
+
+(define-read-only (get-total-supply)
+  (ok (ft-get-supply accrue-share))
+)
+
+(define-read-only (get-token-uri)
+  (ok (some TOKEN_URI))
+)
+
