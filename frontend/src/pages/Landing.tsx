@@ -165,13 +165,11 @@ const Landing = () => {
     <main className="relative overflow-hidden">
       {/* ── Dot grid background ── */}
       <div
-        className="pointer-events-none fixed inset-0 z-0 opacity-[0.03]"
+        className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]"
         style={{
           backgroundImage:
             'radial-gradient(circle, hsl(var(--muted-foreground)) 1px, transparent 1px)',
           backgroundSize: '24px 24px',
-          transform: `translateY(${scrollY * 0.15}px)`,
-          willChange: 'transform',
         }}
       />
 
@@ -444,7 +442,7 @@ const Landing = () => {
       </section>
 
       {/* ═══ FINAL CTA ═══ */}
-      <section className="relative z-10 px-4 pt-28 pb-16">
+      <section className="relative z-10 px-4 pt-24 pb-8">
         {/* Glow — stronger */}
         <div
           className="pointer-events-none absolute left-1/2 top-1/2 h-[400px] w-[700px] opacity-[0.08]"

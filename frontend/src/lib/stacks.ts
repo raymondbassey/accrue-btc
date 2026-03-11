@@ -43,18 +43,27 @@ export interface VaultInfo {
   strategist: string;
 }
 
+/**
+ * cvToValue(cv, true) in @stacks/transactions v7 returns nested
+ * { type, value } wrappers.  This helper unwraps a single field.
+ */
+function unwrap(field: unknown): unknown {
+  if (field && typeof field === 'object' && 'value' in (field as Record<string, unknown>)) {
+    return (field as { value: unknown }).value;
+  }
+  return field;
+}
+
 export async function getVaultInfo(): Promise<VaultInfo> {
   const result = await callReadOnly(DEPLOYER, VAULT_NAME, 'get-vault-info');
-  // result is { value: { ... } } from (ok { ... })
-  const val = (result as { value: Record<string, unknown> }).value;
+  // cvToValue returns { type: "(tuple ...)", value: { field: { type, value }, ... } }
+  const tuple = (result as { value: Record<string, unknown> }).value;
   return {
-    'total-assets': val['total-assets'] as bigint,
-    'total-shares': val['total-shares'] as bigint,
-    'deposit-cap': val['deposit-cap'] as bigint,
-    paused: val.paused as boolean,
-    strategist: typeof val.strategist === 'string'
-      ? val.strategist
-      : String(val.strategist ?? ''),
+    'total-assets': BigInt(unwrap(tuple['total-assets']) as string | bigint),
+    'total-shares': BigInt(unwrap(tuple['total-shares']) as string | bigint),
+    'deposit-cap': BigInt(unwrap(tuple['deposit-cap']) as string | bigint),
+    paused: unwrap(tuple.paused) as boolean,
+    strategist: String(unwrap(tuple.strategist) ?? ''),
   };
 }
 
