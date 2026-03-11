@@ -2,7 +2,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine,
 } from 'recharts';
 import { Coins } from 'lucide-react';
-import type { HistoricalDataPoint } from '@/lib/mock-data';
+import type { HistoricalDataPoint } from '@/lib/types';
 import { tickXProps, tickYProps, gridProps, createXFormatter } from './chartUtils';
 import { ChartTooltip } from './ChartTooltip';
 

@@ -2,7 +2,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
 import { TrendingUp } from 'lucide-react';
-import type { HistoricalDataPoint } from '@/lib/mock-data';
+import type { HistoricalDataPoint } from '@/lib/types';
 import { tickXProps, tickYProps, gridProps, createXFormatter } from './chartUtils';
 import { ChartTooltip } from './ChartTooltip';
 
