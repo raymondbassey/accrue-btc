@@ -101,6 +101,88 @@ export async function getSbtcBalance(who: string): Promise<bigint> {
   return (result as { value: bigint }).value;
 }
 
+// --- Transaction history ---
+
+export interface HiroTx {
+  tx_id: string;
+  tx_status: string;
+  block_time_iso: string;
+  contract_call?: {
+    contract_id: string;
+    function_name: string;
+    function_args?: { repr: string; name: string }[];
+  };
+}
+
+export interface TxHistoryItem {
+  id: string;
+  type: 'deposit' | 'withdraw';
+  amount: number;
+  shares: number;
+  txHash: string;
+  timestamp: Date;
+  status: 'confirmed' | 'pending' | 'failed';
+}
+
+/**
+ * Fetch on-chain transaction history for a user address,
+ * filtered to vault contract deposit/withdraw calls.
+ */
+export async function fetchTxHistory(
+  userAddress: string,
+  limit = 20,
+): Promise<TxHistoryItem[]> {
+  const vaultContract = `${DEPLOYER}.${VAULT_NAME}`;
+  const url = `${API_BASE}/extended/v1/address/${encodeURIComponent(userAddress)}/transactions_with_transfers?limit=${limit}`;
+  const res = await fetch(url);
+  if (!res.ok) return [];
+  const data = await res.json();
+  const results: { tx: HiroTx; ft_transfers?: { amount: string; asset_identifier: string }[] }[] =
+    data.results ?? [];
+
+  const items: TxHistoryItem[] = [];
+
+  for (const entry of results) {
+    const { tx, ft_transfers = [] } = entry;
+    const cc = tx.contract_call;
+    if (!cc || cc.contract_id !== vaultContract) continue;
+
+    const fn = cc.function_name;
+    if (fn !== 'deposit' && fn !== 'withdraw') continue;
+
+    // Extract amount from the first function arg (u<amount>)
+    const rawArg = cc.function_args?.[0]?.repr ?? '';
+    const argMatch = rawArg.match(/^u(\d+)$/);
+    const microAmount = argMatch ? Number(argMatch[1]) : 0;
+    const amount = microAmount / 1e8;
+
+    // Estimate shares from ft_transfers of vault-token
+    const shareTransfer = ft_transfers.find((t) =>
+      t.asset_identifier.includes(`${TOKEN_NAME}::accrueBTC`),
+    );
+    const shares = shareTransfer ? Number(shareTransfer.amount) / 1e8 : amount;
+
+    const status: TxHistoryItem['status'] =
+      tx.tx_status === 'success'
+        ? 'confirmed'
+        : tx.tx_status === 'pending'
+          ? 'pending'
+          : 'failed';
+
+    items.push({
+      id: tx.tx_id,
+      type: fn as 'deposit' | 'withdraw',
+      amount,
+      shares,
+      txHash: `${tx.tx_id.slice(0, 6)}…${tx.tx_id.slice(-4)}`,
+      timestamp: new Date(tx.block_time_iso),
+      status,
+    });
+  }
+
+  return items;
+}
+
 // --- Transaction status polling ---
 
 export type TxStatusResult =
