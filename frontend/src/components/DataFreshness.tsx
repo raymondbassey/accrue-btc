@@ -1,23 +1,21 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
-const POLL_INTERVAL = 15_000;
 const STALE_THRESHOLD = 30_000;
 
 export const DataFreshness = React.forwardRef<HTMLSpanElement>(
   (props, ref) => {
-    const [lastUpdated, setLastUpdated] = useState(Date.now());
+    const queryClient = useQueryClient();
     const [now, setNow] = useState(Date.now());
 
     useEffect(() => {
-      const poll = setInterval(() => setLastUpdated(Date.now()), POLL_INTERVAL);
       const tick = setInterval(() => setNow(Date.now()), 1000);
-      return () => {
-        clearInterval(poll);
-        clearInterval(tick);
-      };
+      return () => clearInterval(tick);
     }, []);
 
+    const queryState = queryClient.getQueryState(['vault-info']);
+    const lastUpdated = queryState?.dataUpdatedAt ?? now;
     const elapsed = now - lastUpdated;
     const isStale = elapsed > STALE_THRESHOLD;
     const seconds = Math.floor(elapsed / 1000);

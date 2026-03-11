@@ -119,7 +119,7 @@ export function Header() {
           {/* Mobile Sheet */}
           <Sheet>
             <SheetTrigger asChild>
-              <button className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground md:hidden">
+              <button aria-label="Open navigation menu" className="inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:text-foreground md:hidden">
                 <Menu className="h-5 w-5" />
               </button>
             </SheetTrigger>

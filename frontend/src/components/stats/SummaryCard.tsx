@@ -18,7 +18,7 @@ export function SummaryCard({ label, value, delta, positive, icon }: SummaryCard
       <p className="font-mono-financial text-2xl font-semibold tabular-nums text-foreground">{value}</p>
       {delta && (
         <p className={`mt-1 text-xs font-medium ${positive ? 'text-success' : 'text-destructive'}`}>
-          {positive ? '▲' : '▼'} {delta} vs 30d avg
+          {positive ? '▲' : '▼'} {delta}
         </p>
       )}
     </div>
