@@ -103,3 +103,56 @@
     (ok shares-to-mint)
   )
 )
+
+;; Withdraw sBTC from the vault by burning shares
+;; Returns: amount of sBTC withdrawn
+(define-public (withdraw (shares uint))
+  (let
+    (
+      (withdrawer tx-sender)
+      (current-total (var-get total-assets))
+      (current-supply (unwrap-panic (contract-call? .vault-token get-total-supply)))
+      (user-shares (unwrap-panic (contract-call? .vault-token get-balance withdrawer)))
+      (assets-to-return (calculate-assets-for-shares shares current-total current-supply))
+    )
+    ;; Guards
+    (asserts! (not (var-get vault-paused)) ERR_VAULT_PAUSED)
+    (asserts! (> shares u0) ERR_ZERO_AMOUNT)
+    (asserts! (<= shares user-shares) ERR_INSUFFICIENT_SHARES)
+    (asserts! (<= assets-to-return current-total) ERR_INSUFFICIENT_ASSETS)
+
+    ;; Burn share tokens
+    (unwrap! (contract-call? .vault-token burn-shares shares withdrawer)
+      ERR_TRANSFER_FAILED)
+
+    ;; Transfer sBTC from vault back to withdrawer
+    (try! (as-contract?
+      ((with-ft 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token "sbtc-token" assets-to-return))
+      (try! (contract-call? 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token transfer assets-to-return tx-sender withdrawer none))
+    ))
+
+    ;; Update state
+    (var-set total-assets (- current-total assets-to-return))
+    (map-set deposits withdrawer
+      (if (>= (default-to u0 (map-get? deposits withdrawer)) assets-to-return)
+        (- (default-to u0 (map-get? deposits withdrawer)) assets-to-return)
+        u0
+      )
+    )
+
+    (print {event: "withdraw", withdrawer: withdrawer, shares: shares, assets: assets-to-return})
+    (ok assets-to-return)
+  )
+)
+
+;; Strategist reports yield earned (adds sBTC to the vault's asset total)
+;; The actual sBTC must be transferred to the vault separately
+(define-public (report-yield (amount uint))
+  (begin
+    (asserts! (is-strategist) ERR_NOT_AUTHORIZED)
+    (asserts! (> amount u0) ERR_ZERO_AMOUNT)
+    (var-set total-assets (+ (var-get total-assets) amount))
+    (print {event: "yield-reported", amount: amount, new-total: (var-get total-assets)})
+    (ok true)
+  )
+)
