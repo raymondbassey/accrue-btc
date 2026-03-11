@@ -54,7 +54,8 @@ describe("accrue-vault", () => {
       });
     });
   });
-// --- Admin functions ---
+
+  // --- Admin functions ---
   describe("admin functions", () => {
     it("owner can pause the vault", () => {
       const { result } = simnet.callPublicFn(vaultContract, "set-paused", [Cl.bool(true)], deployer);
@@ -237,3 +238,86 @@ describe("accrue-vault", () => {
       expect(result).toBeErr(Cl.uint(204));
     });
   });
+
+  // --- Yield ---
+  describe("yield reporting", () => {
+    it("strategist can report yield", () => {
+      const { result } = simnet.callPublicFn(
+        vaultContract, "report-yield", [Cl.uint(5000000)], deployer
+      );
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("non-strategist cannot report yield", () => {
+      const { result } = simnet.callPublicFn(
+        vaultContract, "report-yield", [Cl.uint(5000000)], wallet1
+      );
+      expect(result).toBeErr(Cl.uint(200));
+    });
+
+    it("rejects zero yield report", () => {
+      const { result } = simnet.callPublicFn(
+        vaultContract, "report-yield", [Cl.uint(0)], deployer
+      );
+      expect(result).toBeErr(Cl.uint(201));
+    });
+
+    it("yield increases share value for depositors", () => {
+      setupVaultAuth();
+
+      simnet.callPublicFn(vaultContract, "deposit", [Cl.uint(100000000)], wallet1);
+      simnet.callPublicFn(vaultContract, "report-yield", [Cl.uint(10000000)], deployer);
+
+      const { result } = simnet.callReadOnlyFn(
+        vaultContract, "get-asset-per-share", [Cl.uint(100000000)], deployer
+      );
+      expect(result).toBeOk(Cl.uint(110000000));
+    });
+
+    it("custom strategist can report yield after being set", () => {
+      simnet.callPublicFn(vaultContract, "set-strategist", [Cl.principal(wallet2)], deployer);
+
+      const { result } = simnet.callPublicFn(
+        vaultContract, "report-yield", [Cl.uint(5000000)], wallet2
+      );
+      expect(result).toBeOk(Cl.bool(true));
+    });
+  });
+
+  // --- Read-only ---
+  describe("read-only functions", () => {
+    it("get-asset-per-share returns 0 when no supply", () => {
+      const { result } = simnet.callReadOnlyFn(
+        vaultContract, "get-asset-per-share", [Cl.uint(100)], deployer
+      );
+      expect(result).toBeOk(Cl.uint(0));
+    });
+
+    it("get-deposit-of returns 0 for unknown user", () => {
+      const { result } = simnet.callReadOnlyFn(
+        vaultContract, "get-deposit-of", [Cl.principal(wallet3)], deployer
+      );
+      expect(result).toBeOk(Cl.uint(0));
+    });
+  });
+
+  // --- Full lifecycle ---
+  describe("full lifecycle", () => {
+    it("deposit -> yield -> withdraw returns more than deposited", () => {
+      setupVaultAuth();
+
+      // 1. Deposit 1 sBTC
+      simnet.callPublicFn(vaultContract, "deposit", [Cl.uint(100000000)], wallet1);
+
+      // 2. Simulate yield: transfer sBTC to vault and report it
+      fundVault(wallet2, 10000000); // 0.1 sBTC from wallet2 as yield
+      simnet.callPublicFn(vaultContract, "report-yield", [Cl.uint(10000000)], deployer);
+
+      // 3. Withdraw all shares => should get 1.1 sBTC
+      const { result } = simnet.callPublicFn(
+        vaultContract, "withdraw", [Cl.uint(100000000)], wallet1
+      );
+      expect(result).toBeOk(Cl.uint(110000000));
+    });
+  });
+});
