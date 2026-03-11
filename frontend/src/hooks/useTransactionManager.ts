@@ -41,6 +41,10 @@ export function useTransactionManager(
   const [state, setState] = useState<TxState>(INITIAL);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const mountedRef = useRef(true);
+  const onConfirmedRef = useRef(onConfirmed);
+  const onFailedRef = useRef(onFailed);
+  onConfirmedRef.current = onConfirmed;
+  onFailedRef.current = onFailed;
 
   useEffect(() => {
     mountedRef.current = true;
@@ -84,7 +88,7 @@ export function useTransactionManager(
           toast.dismiss(confirmToastId);
           safeSet(prev => ({ ...prev, status: 'confirmed' }));
           toast.success('Transaction confirmed!', { id: `result-${txId}` });
-          onConfirmed?.(type, amount, txId);
+          onConfirmedRef.current?.(type, amount, txId);
           setTimeout(() => safeSet(() => INITIAL), 2000);
         } else if (result.status === 'abort_by_response') {
           if (pollRef.current) clearInterval(pollRef.current);
@@ -99,7 +103,7 @@ export function useTransactionManager(
             description: errMsg,
             id: `result-${txId}`,
           });
-          onFailed?.(type, amount);
+          onFailedRef.current?.(type, amount);
           setTimeout(() => safeSet(() => INITIAL), 2000);
         } else if (result.status === 'abort_by_post_condition') {
           if (pollRef.current) clearInterval(pollRef.current);
@@ -109,7 +113,7 @@ export function useTransactionManager(
             description: 'Post-condition check failed',
             id: `result-${txId}`,
           });
-          onFailed?.(type, amount);
+          onFailedRef.current?.(type, amount);
           setTimeout(() => safeSet(() => INITIAL), 2000);
         } else if (polls >= MAX_POLLS) {
           if (pollRef.current) clearInterval(pollRef.current);
@@ -120,15 +124,15 @@ export function useTransactionManager(
             id: `result-${txId}`,
             action: {
               label: 'View',
-              onClick: () => window.open(buildExplorerUrl(txId), '_blank'),
+              onClick: () => window.open(buildExplorerUrl(txId), '_blank', 'noopener,noreferrer'),
             },
           });
-          onFailed?.(type, amount);
+          onFailedRef.current?.(type, amount);
           setTimeout(() => safeSet(() => INITIAL), 2000);
         }
       }, POLL_INTERVAL);
     },
-    [safeSet, onConfirmed, onFailed],
+    [safeSet],
   );
 
   const submit = useCallback(
@@ -164,7 +168,7 @@ export function useTransactionManager(
             description: `${txId.slice(0, 10)}…${txId.slice(-4)}`,
             action: {
               label: 'View',
-              onClick: () => window.open(buildExplorerUrl(txId), '_blank'),
+              onClick: () => window.open(buildExplorerUrl(txId), '_blank', 'noopener,noreferrer'),
             },
           });
 
@@ -177,12 +181,12 @@ export function useTransactionManager(
           const message =
             err instanceof Error ? err.message : 'Wallet rejected or failed';
           toast.error('Transaction failed', { description: message });
-          onFailed?.(type, amount);
+          onFailedRef.current?.(type, amount);
           setTimeout(() => safeSet(() => INITIAL), 2000);
         }
       })();
     },
-    [safeSet, pollTransaction, onFailed],
+    [safeSet, pollTransaction],
   );
 
   return { ...state, submit, reset };

@@ -70,8 +70,8 @@ const TypeBadge = React.forwardRef<HTMLDivElement, { type: Transaction['type'] }
 );
 TypeBadge.displayName = 'TypeBadge';
 
-function buildExplorerUrl(txHash: string): string {
-  return `https://explorer.hiro.so/txid/${txHash}?chain=testnet`;
+function buildExplorerUrl(txId: string): string {
+  return `https://explorer.hiro.so/txid/${txId}?chain=testnet`;
 }
 
 function EmptyState() {
@@ -93,7 +93,7 @@ function ExpandedRow({ tx }: { tx: Transaction }) {
         <div className="flex flex-wrap gap-x-8 gap-y-2 text-xs text-muted-foreground">
           <div>
             <span className="text-[10px] uppercase tracking-wider">Full Hash</span>
-            <p className="mt-0.5 font-mono-financial text-foreground">{tx.txHash}</p>
+            <p className="mt-0.5 font-mono-financial text-foreground">{tx.id}</p>
           </div>
           <div>
             <span className="text-[10px] uppercase tracking-wider">Timestamp</span>
@@ -130,7 +130,7 @@ function MobileCard({ tx, index }: { tx: Transaction; index: number }) {
       </div>
       <div className="flex items-center justify-between">
         <a
-          href={buildExplorerUrl(tx.txHash)}
+          href={buildExplorerUrl(tx.id)}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1 font-mono-financial text-xs text-primary hover:underline"
@@ -247,7 +247,7 @@ export function TransactionHistory({ loading, liveTxs = [] }: TransactionHistory
                             </TableCell>
                             <TableCell>
                               <a
-                                href={buildExplorerUrl(tx.txHash)}
+                                href={buildExplorerUrl(tx.id)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1 font-mono-financial text-xs text-primary hover:underline"
