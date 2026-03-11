@@ -1,4 +1,4 @@
-import type { HistoricalDataPoint } from '@/lib/mock-data';
+import type { HistoricalDataPoint } from '@/lib/types';
 
 export const tickXProps = {
   tick: { fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontFamily: 'JetBrains Mono, monospace' },

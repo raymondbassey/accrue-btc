@@ -11,7 +11,7 @@ import { useVaultInfo, useSharesOf, useSbtcBalance } from '@/hooks/useContractRe
 import { formatBTC, formatABTC, sanitizeBTCInput } from '@/lib/format';
 import { ArrowDown, ArrowUp, Loader2, Wallet, ExternalLink, Check, X, ArrowDownUp } from 'lucide-react';
 import { useTransactionManager, type TxStatus } from '@/hooks/useTransactionManager';
-import type { Transaction } from '@/lib/mock-data';
+import type { Transaction } from '@/lib/types';
 
 /** Token icon — colored circle with label */
 function TokenIcon({ token }: { token: 'sBTC' | 'aBTC' }) {
@@ -72,7 +72,7 @@ export const ActionPanel = React.forwardRef<HTMLDivElement, ActionPanelProps>(
           status: 'confirmed',
         });
       },
-      [onTransaction],
+      [onTransaction, sharePrice],
     );
 
     const handleFailed = useCallback(
@@ -89,7 +89,7 @@ export const ActionPanel = React.forwardRef<HTMLDivElement, ActionPanelProps>(
           status: 'failed',
         });
       },
-      [onTransaction],
+      [onTransaction, sharePrice],
     );
 
     const txManager = useTransactionManager(handleConfirmed, handleFailed);

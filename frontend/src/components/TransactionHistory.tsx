@@ -12,10 +12,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { MOCK_TRANSACTIONS, type Transaction } from '@/lib/mock-data';
+import type { Transaction } from '@/lib/types';
 import { formatBTC, formatRelativeTime } from '@/lib/format';
 import { ExternalLink, History, Check, X as XIcon, ChevronDown, ChevronRight } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useWallet } from '@/contexts/WalletContext';
+import { useTxHistory } from '@/hooks/useContractReads';
 
 const PAGE_SIZE = 5;
 
@@ -148,8 +150,19 @@ interface TransactionHistoryProps {
 }
 
 export function TransactionHistory({ loading, liveTxs = [] }: TransactionHistoryProps) {
-  const transactions = [...liveTxs, ...MOCK_TRANSACTIONS];
-  const isEmpty = !loading && transactions.length === 0;
+  const { address } = useWallet();
+  const { data: onChainTxs = [], isLoading: historyLoading } = useTxHistory(address);
+
+  // Merge session-live txs with on-chain history, dedup by id
+  const onChainIds = new Set(onChainTxs.map((t) => t.id));
+  const merged = [
+    ...liveTxs.filter((t) => !onChainIds.has(t.id)),
+    ...onChainTxs,
+  ];
+
+  const isLoadingAll = loading || historyLoading;
+  const isEmpty = !isLoadingAll && merged.length === 0;
+  const transactions = merged;
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -194,7 +207,7 @@ export function TransactionHistory({ loading, liveTxs = [] }: TransactionHistory
                   </TableRow>
                 </TableHeader>
                 <TableBody aria-live="polite">
-                  {loading
+                  {isLoadingAll
                     ? Array.from({ length: 4 }).map((_, i) => (
                         <TableRow key={i} className="border-border">
                           <TableCell><Skeleton className="h-4 w-4" /></TableCell>
@@ -270,7 +283,7 @@ export function TransactionHistory({ loading, liveTxs = [] }: TransactionHistory
 
             {/* Mobile card list */}
             <div className="md:hidden" aria-live="polite">
-              {loading
+              {isLoadingAll
                 ? Array.from({ length: 4 }).map((_, i) => (
                     <div key={i} className="space-y-2 border-b border-border p-4 last:border-b-0">
                       <Skeleton className="h-5 w-full" />
@@ -284,7 +297,7 @@ export function TransactionHistory({ loading, liveTxs = [] }: TransactionHistory
             </div>
 
             {/* View More */}
-            {hasMore && !loading && (
+            {hasMore && !isLoadingAll && (
               <div className="border-t border-border p-3 text-center">
                 <Button
                   variant="ghost"
