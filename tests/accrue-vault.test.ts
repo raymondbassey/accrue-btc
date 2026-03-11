@@ -172,3 +172,68 @@ describe("accrue-vault", () => {
       expect(dep).toBeOk(Cl.uint(150000000));
     });
   });
+
+  // --- Withdraw ---
+  describe("withdraw", () => {
+    it("withdraws full deposit when no yield", () => {
+      setupVaultAuth();
+      simnet.callPublicFn(vaultContract, "deposit", [Cl.uint(100000000)], wallet1);
+
+      const { result } = simnet.callPublicFn(
+        vaultContract, "withdraw", [Cl.uint(100000000)], wallet1
+      );
+      expect(result).toBeOk(Cl.uint(100000000));
+
+      const { result: assets } = simnet.callReadOnlyFn(vaultContract, "get-total-assets", [], deployer);
+      expect(assets).toBeOk(Cl.uint(0));
+
+      const { result: shares } = simnet.callReadOnlyFn(
+        vaultContract, "get-shares-of", [Cl.principal(wallet1)], deployer
+      );
+      expect(shares).toBeOk(Cl.uint(0));
+    });
+
+    it("partial withdrawal returns proportional assets", () => {
+      setupVaultAuth();
+      simnet.callPublicFn(vaultContract, "deposit", [Cl.uint(100000000)], wallet1);
+
+      const { result } = simnet.callPublicFn(
+        vaultContract, "withdraw", [Cl.uint(50000000)], wallet1
+      );
+      expect(result).toBeOk(Cl.uint(50000000));
+
+      const { result: shares } = simnet.callReadOnlyFn(
+        vaultContract, "get-shares-of", [Cl.principal(wallet1)], deployer
+      );
+      expect(shares).toBeOk(Cl.uint(50000000));
+    });
+
+    it("rejects withdraw of zero shares", () => {
+      setupVaultAuth();
+      const { result } = simnet.callPublicFn(
+        vaultContract, "withdraw", [Cl.uint(0)], wallet1
+      );
+      expect(result).toBeErr(Cl.uint(201));
+    });
+
+    it("rejects withdraw of more shares than owned", () => {
+      setupVaultAuth();
+      simnet.callPublicFn(vaultContract, "deposit", [Cl.uint(100000000)], wallet1);
+
+      const { result } = simnet.callPublicFn(
+        vaultContract, "withdraw", [Cl.uint(200000000)], wallet1
+      );
+      expect(result).toBeErr(Cl.uint(202));
+    });
+
+    it("rejects withdraw when vault is paused", () => {
+      setupVaultAuth();
+      simnet.callPublicFn(vaultContract, "deposit", [Cl.uint(100000000)], wallet1);
+      simnet.callPublicFn(vaultContract, "set-paused", [Cl.bool(true)], deployer);
+
+      const { result } = simnet.callPublicFn(
+        vaultContract, "withdraw", [Cl.uint(100000000)], wallet1
+      );
+      expect(result).toBeErr(Cl.uint(204));
+    });
+  });
