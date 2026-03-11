@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 import { useInView } from '@/hooks/useInView';
 import { useCountUp } from '@/hooks/useCountUp';
 import { useParallax } from '@/hooks/useParallax';
-import { MOCK_VAULT } from '@/lib/mock-data';
+import { useVaultInfo } from '@/hooks/useContractReads';
+import { fromMicroUnits } from '@/lib/contracts';
 import { Button } from '@/components/ui/button';
 import { Logo, Logomark } from '@/components/Logo';
 
@@ -157,6 +158,12 @@ function TrustBadge({ icon: Icon, label }: { icon: React.ElementType; label: str
 /* ═══════════════ LANDING PAGE ═══════════════ */
 const Landing = () => {
   const scrollY = useParallax();
+  const { data: vaultInfo } = useVaultInfo();
+
+  const totalAssets = vaultInfo ? fromMicroUnits(Number(vaultInfo['total-assets'])) : 0;
+  const totalShares = vaultInfo ? fromMicroUnits(Number(vaultInfo['total-shares'])) : 0;
+  const sharePrice = totalShares > 0 ? totalAssets / totalShares : 1;
+
   const scrollToHowItWorks = () => {
     document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -223,7 +230,7 @@ const Landing = () => {
               Total Value Locked
             </span>
             <span className="font-mono-financial text-3xl font-bold text-foreground sm:text-4xl">
-              ₿{MOCK_VAULT.totalAssets.toFixed(8)}
+              ₿{totalAssets.toFixed(8)}
             </span>
           </div>
         </Section>
@@ -266,9 +273,9 @@ const Landing = () => {
         {/* Top accent line */}
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-center divide-y divide-border sm:flex-row sm:divide-x sm:divide-y-0">
-          <AnimatedStat label="Total Value Locked" value={MOCK_VAULT.totalAssets} prefix="₿" decimals={8} />
+          <AnimatedStat label="Total Value Locked" value={totalAssets} prefix="₿" decimals={8} />
           <AnimatedStat label="Current APY" value={1.74} suffix="%" decimals={2} />
-          <AnimatedStat label="Share Price" value={MOCK_VAULT.sharePrice} prefix="₿" decimals={8} />
+          <AnimatedStat label="Share Price" value={sharePrice} prefix="₿" decimals={8} />
         </div>
       </section>
 

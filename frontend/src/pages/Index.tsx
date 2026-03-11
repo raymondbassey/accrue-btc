@@ -4,14 +4,12 @@ import { PositionPanel } from '@/components/PositionPanel';
 import { ActionPanel } from '@/components/ActionPanel';
 import { TransactionHistory } from '@/components/TransactionHistory';
 import { DataFreshness } from '@/components/DataFreshness';
-import { type Transaction } from '@/lib/mock-data';
-import { formatBTC, formatABTC, formatPercentage } from '@/lib/format';
+import type { Transaction } from '@/lib/types';
+import { formatBTC, formatABTC } from '@/lib/format';
 import { fromMicroUnits } from '@/lib/contracts';
 import { useWallet } from '@/contexts/WalletContext';
 import { useVaultInfo } from '@/hooks/useContractReads';
 import { AlertTriangle, Shield, Coins, TrendingUp, Target } from 'lucide-react';
-
-const PRECISION = 100_000_000;
 
 const Index = () => {
   const { connected } = useWallet();

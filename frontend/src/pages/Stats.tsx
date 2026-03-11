@@ -1,54 +1,63 @@
-import { useMemo, useState, useEffect } from 'react';
-import { TrendingUp, DollarSign, Percent, Coins } from 'lucide-react';
-import { MOCK_HISTORICAL_DATA } from '@/lib/mock-data';
+import { useMemo, useState } from 'react';
+import { TrendingUp, DollarSign, Coins, Info } from 'lucide-react';
 import { formatBTC } from '@/lib/format';
+import { fromMicroUnits } from '@/lib/contracts';
+import { useVaultInfo } from '@/hooks/useContractReads';
 import { RangeToggle, type Range } from '@/components/stats/RangeToggle';
 import { SummaryCard } from '@/components/stats/SummaryCard';
 import { SummaryCardSkeleton } from '@/components/stats/SummaryCardSkeleton';
 import { ChartSkeleton } from '@/components/stats/ChartSkeleton';
 import { TVLChart } from '@/components/stats/TVLChart';
-import { APYChart } from '@/components/stats/APYChart';
 import { DailyDepositsChart } from '@/components/stats/DailyDepositsChart';
 import { CumDepositsChart } from '@/components/stats/CumDepositsChart';
 import { SharePriceChart } from '@/components/stats/SharePriceChart';
+import type { HistoricalDataPoint } from '@/lib/types';
 
 const RANGE_DAYS: Record<Range, number> = { '7d': 7, '14d': 14, '30d': 30 };
 
 export default function Stats() {
   const [range, setRange] = useState<Range>('30d');
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: vaultInfo, isLoading } = useVaultInfo();
 
-  useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, [range]);
+  const totalAssets = vaultInfo ? fromMicroUnits(Number(vaultInfo['total-assets'])) : 0;
+  const totalShares = vaultInfo ? fromMicroUnits(Number(vaultInfo['total-shares'])) : 0;
+  const sharePrice = totalShares > 0 ? totalAssets / totalShares : 1;
+  const depositCap = vaultInfo ? fromMicroUnits(Number(vaultInfo['deposit-cap'])) : 0;
+  const capPercent = depositCap > 0 ? (totalAssets / depositCap) * 100 : 0;
 
-  const data = useMemo(() => MOCK_HISTORICAL_DATA.slice(-RANGE_DAYS[range]), [range]);
-
-  const currentTVL = data[data.length - 1]?.tvl ?? 0;
-  const avgTVL = data.reduce((s, d) => s + d.tvl, 0) / data.length;
-  const tvlDelta = ((currentTVL - avgTVL) / avgTVL * 100).toFixed(2);
-
-  const currentAPY = data[data.length - 1]?.apy ?? 0;
-  const avgAPY = data.reduce((s, d) => s + d.apy, 0) / data.length;
-  const apyDelta = (currentAPY - avgAPY).toFixed(4);
-
-  const totalDeposits = data.reduce((s, d) => s + d.deposits, 0);
-
-  const currentSharePrice = data[data.length - 1]?.sharePrice ?? 1;
-  const avgSharePrice = data.reduce((s, d) => s + d.sharePrice, 0) / data.length;
-  const sharePriceDelta = ((currentSharePrice - avgSharePrice) / avgSharePrice * 100).toFixed(4);
+  // Build a single-point dataset from live on-chain data.
+  // Historical indexing is not yet available on testnet.
+  const data = useMemo<HistoricalDataPoint[]>(() => {
+    const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return [
+      {
+        date: today,
+        tvl: totalAssets,
+        apy: 0,
+        deposits: totalAssets,
+        cumDeposits: totalAssets,
+        sharePrice,
+      },
+    ];
+  }, [totalAssets, sharePrice]);
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
       <div className="mb-8 flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Vault Statistics</h1>
-        <p className="text-sm text-muted-foreground">Historical performance metrics for the AccrueBTC sBTC Yield Vault</p>
+        <p className="text-sm text-muted-foreground">Live on-chain metrics for the AccrueBTC sBTC Yield Vault</p>
+      </div>
+
+      <div className="mb-6 flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3">
+        <Info className="h-4 w-4 shrink-0 text-primary" />
+        <p className="text-xs text-muted-foreground">
+          Testnet deployment — historical charts will populate as vault activity grows.
+          Summary cards reflect live on-chain state.
+        </p>
       </div>
 
       <div className="mb-6 flex items-center justify-between">
-        <span className="text-xs text-muted-foreground uppercase tracking-wider">Showing last {RANGE_DAYS[range]} days</span>
+        <span className="text-xs text-muted-foreground uppercase tracking-wider">Live on-chain data</span>
         <RangeToggle value={range} onChange={setRange} />
       </div>
 
@@ -62,10 +71,10 @@ export default function Stats() {
           </>
         ) : (
           <>
-            <SummaryCard label="Current TVL" value={formatBTC(currentTVL)} delta={`${Math.abs(Number(tvlDelta))}%`} positive={Number(tvlDelta) >= 0} icon={<DollarSign className="h-4 w-4" />} />
-            <SummaryCard label="Current APY" value={`${currentAPY.toFixed(4)}%`} delta={`${Math.abs(Number(apyDelta))}%`} positive={Number(apyDelta) >= 0} icon={<Percent className="h-4 w-4" />} />
-            <SummaryCard label="Share Price" value={`${currentSharePrice.toFixed(8)}`} delta={`${Math.abs(Number(sharePriceDelta))}%`} positive={Number(sharePriceDelta) >= 0} icon={<Coins className="h-4 w-4" />} />
-            <SummaryCard label={`${RANGE_DAYS[range]}d Total Deposits`} value={formatBTC(totalDeposits)} icon={<TrendingUp className="h-4 w-4" />} />
+            <SummaryCard label="Total Value Locked" value={formatBTC(totalAssets)} delta={`${capPercent.toFixed(1)}% of cap`} positive icon={<DollarSign className="h-4 w-4" />} />
+            <SummaryCard label="Share Price" value={sharePrice.toFixed(8)} icon={<Coins className="h-4 w-4" />} />
+            <SummaryCard label="Total Shares" value={totalShares.toFixed(8)} icon={<Coins className="h-4 w-4" />} />
+            <SummaryCard label="Deposit Cap" value={formatBTC(depositCap)} icon={<TrendingUp className="h-4 w-4" />} />
           </>
         )}
       </div>
@@ -77,15 +86,13 @@ export default function Stats() {
             <ChartSkeleton />
             <ChartSkeleton />
             <div className="md:col-span-2"><ChartSkeleton height="lg" /></div>
-            <div className="md:col-span-2"><ChartSkeleton height="lg" /></div>
           </>
         ) : (
           <>
             <div className="md:col-span-2"><TVLChart data={data} /></div>
-            <APYChart data={data} avgAPY={avgAPY} rangeDays={RANGE_DAYS[range]} />
             <DailyDepositsChart data={data} />
+            <SharePriceChart data={data} />
             <div className="md:col-span-2"><CumDepositsChart data={data} /></div>
-            <div className="md:col-span-2"><SharePriceChart data={data} /></div>
           </>
         )}
       </div>
