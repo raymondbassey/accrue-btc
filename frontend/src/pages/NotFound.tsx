@@ -6,7 +6,7 @@ const NotFound = () => {
   const location = useLocation();
 
   useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    console.warn("404: attempted to access non-existent route:", location.pathname);
   }, [location.pathname]);
 
   return (
@@ -18,7 +18,7 @@ const NotFound = () => {
           to="/"
           className="inline-flex h-10 items-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground hover:bg-primary/90"
         >
-          Back to Vault
+          Back to Home
         </Link>
       </div>
     </div>

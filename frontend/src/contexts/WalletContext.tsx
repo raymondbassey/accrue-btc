@@ -45,31 +45,35 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     }));
   }, [state.address, vaultInfo]);
 
-  // Restore session on mount
+  // Restore session on mount — only if both wallet reports connected AND we have a stored address
   useEffect(() => {
-    if (stacksIsConnected()) {
-      const stored = sessionStorage.getItem('stx_address');
-      if (stored) {
-        setState(prev => ({ ...prev, connected: true, address: stored }));
-      }
+    const stored = sessionStorage.getItem('stx_address');
+    if (stacksIsConnected() && stored) {
+      setState(prev => ({ ...prev, connected: true, address: stored }));
+    } else {
+      sessionStorage.removeItem('stx_address');
     }
   }, []);
 
   const connect = useCallback(async () => {
-    const response = await stacksConnect({ network: 'testnet' });
-    // response.addresses contains STX and BTC addresses
-    const stxAddr = response.addresses.find(
-      (a: { symbol: string }) => a.symbol === 'STX',
-    );
-    const address = stxAddr?.address ?? null;
-    if (address) {
-      sessionStorage.setItem('stx_address', address);
+    try {
+      const response = await stacksConnect({ network: 'testnet' });
+      // response.addresses contains STX and BTC addresses
+      const stxAddr = response.addresses.find(
+        (a: { symbol: string }) => a.symbol === 'STX',
+      );
+      const address = stxAddr?.address ?? null;
+      if (address) {
+        sessionStorage.setItem('stx_address', address);
+      }
+      setState(prev => ({
+        ...prev,
+        connected: true,
+        address,
+      }));
+    } catch {
+      // User cancelled popup or wallet extension not available
     }
-    setState(prev => ({
-      ...prev,
-      connected: true,
-      address,
-    }));
   }, []);
 
   const disconnect = useCallback(() => {

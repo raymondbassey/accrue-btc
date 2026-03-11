@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useRef, useEffect } from 'react';
 import { request } from '@stacks/connect';
 import { Cl } from '@stacks/transactions';
 import { toast } from 'sonner';
@@ -16,6 +16,12 @@ const MAX_POLLS = 40; // ~2 minutes
 export function useAdminAction() {
   const [submitting, setSubmitting] = useState(false);
   const queryClient = useQueryClient();
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
 
   const execute = useCallback(
     async (
@@ -41,13 +47,14 @@ export function useAdminAction() {
           id: toastId,
           action: {
             label: 'View',
-            onClick: () => window.open(buildExplorerUrl(txId), '_blank'),
+            onClick: () => window.open(buildExplorerUrl(txId), '_blank', 'noopener,noreferrer'),
           },
         });
 
         // Poll for on-chain confirmation
         let polls = 0;
         const poll = async (): Promise<void> => {
+          if (!mountedRef.current) return;
           if (polls >= MAX_POLLS) {
             toast.info('Transaction still pending — data will refresh when confirmed.', { id: toastId });
             queryClient.invalidateQueries({ queryKey: ['vault-info'] });
@@ -60,7 +67,7 @@ export function useAdminAction() {
               id: toastId,
               action: {
                 label: 'View',
-                onClick: () => window.open(buildExplorerUrl(txId), '_blank'),
+                onClick: () => window.open(buildExplorerUrl(txId), '_blank', 'noopener,noreferrer'),
               },
             });
             queryClient.invalidateQueries({ queryKey: ['vault-info'] });
