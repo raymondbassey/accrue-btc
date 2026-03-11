@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { useWallet } from '@/contexts/WalletContext';
-import { MOCK_POSITION } from '@/lib/mock-data';
+import { fromMicroUnits } from '@/lib/contracts';
+import { useSharesOf, useAssetPerShare, useDepositOf } from '@/hooks/useContractReads';
 import { formatBTC, formatABTC, formatPercentage } from '@/lib/format';
 import { Wallet, PackageOpen, ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,7 +14,18 @@ interface PositionPanelProps {
 }
 
 export const PositionPanel = React.forwardRef<HTMLDivElement, PositionPanelProps>(({ loading }, ref) => {
-  const { connected, connect } = useWallet();
+  const { connected, connect, address } = useWallet();
+  const { data: sharesRaw, isLoading: sharesLoading } = useSharesOf(address);
+  const { data: valueRaw, isLoading: valueLoading } = useAssetPerShare(sharesRaw);
+  const { data: depositRaw, isLoading: depositLoading } = useDepositOf(address);
+
+  const dataLoading = loading || sharesLoading || valueLoading || depositLoading;
+
+  const abtcBalance = sharesRaw ? fromMicroUnits(Number(sharesRaw)) : 0;
+  const currentValue = valueRaw ? fromMicroUnits(Number(valueRaw)) : 0;
+  const originalDeposit = depositRaw ? fromMicroUnits(Number(depositRaw)) : 0;
+  const yieldEarned = currentValue - originalDeposit;
+  const yieldPercent = originalDeposit > 0 ? (yieldEarned / originalDeposit) * 100 : 0;
 
   const scrollToAction = () => {
     document.getElementById('action-panel')?.scrollIntoView({ behavior: 'smooth' });
@@ -38,7 +50,7 @@ export const PositionPanel = React.forwardRef<HTMLDivElement, PositionPanelProps
     );
   }
 
-  if (loading) {
+  if (dataLoading) {
     return (
       <Card ref={ref} className="border-border bg-card">
         <CardHeader className="pb-2">
@@ -76,8 +88,7 @@ export const PositionPanel = React.forwardRef<HTMLDivElement, PositionPanelProps
     );
   }
 
-  const pos = MOCK_POSITION;
-  const hasPosition = pos.abtcBalance > 0;
+  const hasPosition = abtcBalance > 0;
 
   if (!hasPosition) {
     return (
@@ -104,18 +115,18 @@ export const PositionPanel = React.forwardRef<HTMLDivElement, PositionPanelProps
     );
   }
 
-  const yieldFraction = pos.yieldEarned / pos.currentValue;
+  const yieldFraction = currentValue > 0 ? yieldEarned / currentValue : 0;
   const depositFraction = 1 - yieldFraction;
 
   const holdingsRows = [
-    { label: 'aBTC Balance', value: formatABTC(pos.abtcBalance), highlight: false },
-    { label: 'Current Value', value: formatBTC(pos.currentValue), highlight: false },
-    { label: 'Original Deposit', value: formatBTC(pos.originalDeposit), highlight: false },
+    { label: 'aBTC Balance', value: formatABTC(abtcBalance), highlight: false },
+    { label: 'Current Value', value: formatBTC(currentValue), highlight: false },
+    { label: 'Original Deposit', value: formatBTC(originalDeposit), highlight: false },
   ];
 
   const performanceRows = [
-    { label: 'Yield Earned', value: formatBTC(pos.yieldEarned), highlight: true, pulse: true },
-    { label: 'Yield %', value: formatPercentage(pos.yieldPercent), highlight: true, pulse: false },
+    { label: 'Yield Earned', value: formatBTC(yieldEarned), highlight: true, pulse: true },
+    { label: 'Yield %', value: formatPercentage(yieldPercent), highlight: true, pulse: false },
   ];
 
   return (
@@ -129,13 +140,13 @@ export const PositionPanel = React.forwardRef<HTMLDivElement, PositionPanelProps
         {/* Summary header */}
         <div className="flex items-baseline justify-between">
           <p className="font-mono-financial text-3xl font-semibold tracking-tight text-foreground">
-            {formatBTC(pos.currentValue)}
+            {formatBTC(currentValue)}
           </p>
           <Badge
             variant="outline"
             className="border-success/30 bg-success/10 text-success font-mono-financial text-xs"
           >
-            {formatPercentage(pos.yieldPercent)}
+            {formatPercentage(yieldPercent)}
           </Badge>
         </div>
 

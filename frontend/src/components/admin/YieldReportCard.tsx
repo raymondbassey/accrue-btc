@@ -6,27 +6,22 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ConfirmDialog } from './ConfirmDialog';
 import { sanitizeBTCInput } from '@/lib/format';
 import { isValidBTCAmount } from '@/lib/validation';
-import { toast } from 'sonner';
+import { toMicroUnits } from '@/lib/contracts';
+import { useAdminAction } from '@/hooks/useAdminAction';
+import { Cl } from '@stacks/transactions';
 import { Loader2 } from 'lucide-react';
 
 export function YieldReportCard({ loading }: { loading?: boolean }) {
   const [amount, setAmount] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  const { execute, submitting } = useAdminAction();
 
   const validation = amount ? isValidBTCAmount(amount) : { valid: false };
   const hasError = amount && !validation.valid && validation.error;
 
   const handleSubmit = () => {
-    setSubmitting(true);
-    const toastId = toast.loading('Waiting for wallet…');
-    setTimeout(() => {
-      setSubmitting(false);
-      toast.success('Yield reported', {
-        id: toastId,
-        description: `${amount} sBTC yield reported to vault.`,
-      });
-      setAmount('');
-    }, 1500);
+    const microAmount = toMicroUnits(parseFloat(amount));
+    execute('report-yield', [Cl.uint(microAmount)], `${amount} sBTC yield reported`);
+    setAmount('');
   };
 
   return (
