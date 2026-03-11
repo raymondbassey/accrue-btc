@@ -74,3 +74,42 @@ describe("vault-token", () => {
       expect(result).toBeErr(Cl.uint(100)); // ERR_NOT_AUTHORIZED
     });
   });
+
+  // --- Mint and burn (via vault address) ---
+  describe("mint and burn via authorized vault", () => {
+    it("mints shares when called by authorized vault address", () => {
+      // Set wallet1 as the vault address
+      simnet.callPublicFn(contractName, "set-vault-address", [Cl.principal(wallet1)], deployer);
+
+      // wallet1 (acting as vault) mints shares to wallet2
+      const { result } = simnet.callPublicFn(
+        contractName, "mint-shares", [Cl.uint(5000), Cl.principal(wallet2)], wallet1
+      );
+      expect(result).toBeOk(Cl.bool(true));
+
+      // Verify balance
+      const { result: balance } = simnet.callReadOnlyFn(
+        contractName, "get-balance", [Cl.principal(wallet2)], deployer
+      );
+      expect(balance).toBeOk(Cl.uint(5000));
+
+      // Verify total supply
+      const { result: supply } = simnet.callReadOnlyFn(contractName, "get-total-supply", [], deployer);
+      expect(supply).toBeOk(Cl.uint(5000));
+    });
+
+    it("burns shares when called by authorized vault address", () => {
+      simnet.callPublicFn(contractName, "set-vault-address", [Cl.principal(wallet1)], deployer);
+      simnet.callPublicFn(contractName, "mint-shares", [Cl.uint(5000), Cl.principal(wallet2)], wallet1);
+
+      const { result } = simnet.callPublicFn(
+        contractName, "burn-shares", [Cl.uint(2000), Cl.principal(wallet2)], wallet1
+      );
+      expect(result).toBeOk(Cl.bool(true));
+
+      const { result: balance } = simnet.callReadOnlyFn(
+        contractName, "get-balance", [Cl.principal(wallet2)], deployer
+      );
+      expect(balance).toBeOk(Cl.uint(3000));
+    });
+  });
