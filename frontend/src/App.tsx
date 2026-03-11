@@ -31,8 +31,6 @@ const AnimatedRoutes = () => {
 
 const Layout = () => {
   const location = useLocation();
-  const isLanding = location.pathname === '/';
-
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <NetworkMismatchBanner />
