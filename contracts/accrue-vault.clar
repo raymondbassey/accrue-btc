@@ -40,3 +40,66 @@
 (define-read-only (is-owner)
   (is-eq tx-sender CONTRACT_OWNER)
 )
+
+(define-read-only (is-strategist)
+  (is-eq tx-sender (var-get strategist))
+)
+
+;; --- Admin functions ---
+(define-public (set-paused (paused bool))
+  (begin
+    (asserts! (is-owner) ERR_NOT_AUTHORIZED)
+    (ok (var-set vault-paused paused))
+  )
+)
+
+(define-public (set-deposit-cap (new-cap uint))
+  (begin
+    ;; #[filter(new-cap)]
+    (asserts! (is-owner) ERR_NOT_AUTHORIZED)
+    (ok (var-set deposit-cap new-cap))
+  )
+)
+
+(define-public (set-strategist (new-strategist principal))
+  (begin
+    ;; #[filter(new-strategist)]
+    (asserts! (is-owner) ERR_NOT_AUTHORIZED)
+    (ok (var-set strategist new-strategist))
+  )
+)
+
+;; --- Core vault logic ---
+
+;; Deposit sBTC into the vault
+;; Returns: number of share tokens minted
+(define-public (deposit (amount uint))
+  (let
+    (
+      (depositor tx-sender)
+      (current-total (var-get total-assets))
+      (current-supply (unwrap-panic (contract-call? .vault-token get-total-supply)))
+      (shares-to-mint (calculate-shares-for-deposit amount current-total current-supply))
+      (existing-deposit (default-to u0 (map-get? deposits depositor)))
+    )
+    ;; Guards
+    (asserts! (not (var-get vault-paused)) ERR_VAULT_PAUSED)
+    (asserts! (> amount u0) ERR_ZERO_AMOUNT)
+    (asserts! (<= (+ current-total amount) (var-get deposit-cap)) ERR_DEPOSIT_CAP_REACHED)
+
+    ;; Transfer sBTC from depositor to vault
+    (unwrap! (contract-call? 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token transfer amount depositor current-contract none)
+      ERR_TRANSFER_FAILED)
+
+    ;; Mint share tokens
+    (unwrap! (contract-call? .vault-token mint-shares shares-to-mint depositor)
+      ERR_TRANSFER_FAILED)
+
+    ;; Update state
+    (var-set total-assets (+ current-total amount))
+    (map-set deposits depositor (+ existing-deposit amount))
+
+    (print {event: "deposit", depositor: depositor, amount: amount, shares: shares-to-mint})
+    (ok shares-to-mint)
+  )
+)
