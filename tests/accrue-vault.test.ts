@@ -94,3 +94,81 @@ describe("accrue-vault", () => {
       expect(result).toBeErr(Cl.uint(200));
     });
   });
+
+  // --- Deposit ---
+  // Note: wallets are pre-funded with sbtc_balance = 1_000_000_000 in Devnet.toml
+  describe("deposit", () => {
+    it("first deposit mints 1:1 shares", () => {
+      setupVaultAuth();
+
+      const { result } = simnet.callPublicFn(
+        vaultContract, "deposit", [Cl.uint(100000000)], wallet1
+      );
+      expect(result).toBeOk(Cl.uint(100000000));
+
+      const { result: assets } = simnet.callReadOnlyFn(vaultContract, "get-total-assets", [], deployer);
+      expect(assets).toBeOk(Cl.uint(100000000));
+
+      const { result: shares } = simnet.callReadOnlyFn(
+        vaultContract, "get-shares-of", [Cl.principal(wallet1)], deployer
+      );
+      expect(shares).toBeOk(Cl.uint(100000000));
+
+      const { result: dep } = simnet.callReadOnlyFn(
+        vaultContract, "get-deposit-of", [Cl.principal(wallet1)], deployer
+      );
+      expect(dep).toBeOk(Cl.uint(100000000));
+    });
+
+    it("second deposit mints proportional shares", () => {
+      setupVaultAuth();
+
+      simnet.callPublicFn(vaultContract, "deposit", [Cl.uint(100000000)], wallet1);
+
+      const { result } = simnet.callPublicFn(
+        vaultContract, "deposit", [Cl.uint(50000000)], wallet2
+      );
+      expect(result).toBeOk(Cl.uint(50000000));
+    });
+
+    it("rejects deposit of zero", () => {
+      setupVaultAuth();
+      const { result } = simnet.callPublicFn(
+        vaultContract, "deposit", [Cl.uint(0)], wallet1
+      );
+      expect(result).toBeErr(Cl.uint(201));
+    });
+
+    it("rejects deposit when vault is paused", () => {
+      setupVaultAuth();
+      simnet.callPublicFn(vaultContract, "set-paused", [Cl.bool(true)], deployer);
+
+      const { result } = simnet.callPublicFn(
+        vaultContract, "deposit", [Cl.uint(100000000)], wallet1
+      );
+      expect(result).toBeErr(Cl.uint(204));
+    });
+
+    it("rejects deposit exceeding cap", () => {
+      setupVaultAuth();
+      simnet.callPublicFn(vaultContract, "set-deposit-cap", [Cl.uint(1000)], deployer);
+
+      const { result } = simnet.callPublicFn(
+        vaultContract, "deposit", [Cl.uint(5000)], wallet1
+      );
+      expect(result).toBeErr(Cl.uint(205));
+    });
+
+    it("allows multiple deposits from same user", () => {
+      setupVaultAuth();
+
+      simnet.callPublicFn(vaultContract, "deposit", [Cl.uint(100000000)], wallet1);
+      const { result } = simnet.callPublicFn(vaultContract, "deposit", [Cl.uint(50000000)], wallet1);
+      expect(result).toBeOk(Cl.uint(50000000));
+
+      const { result: dep } = simnet.callReadOnlyFn(
+        vaultContract, "get-deposit-of", [Cl.principal(wallet1)], deployer
+      );
+      expect(dep).toBeOk(Cl.uint(150000000));
+    });
+  });
