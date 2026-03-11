@@ -1,37 +1,35 @@
-import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ConfirmDialog } from './ConfirmDialog';
-import { MOCK_VAULT } from '@/lib/mock-data';
-import { toast } from 'sonner';
+import { useVaultInfo } from '@/hooks/useContractReads';
+import { useAdminAction } from '@/hooks/useAdminAction';
+import { Cl } from '@stacks/transactions';
 import { Pause, Play, Loader2 } from 'lucide-react';
 
 export function VaultStatusCard({ loading }: { loading?: boolean }) {
-  const [paused, setPaused] = useState(MOCK_VAULT.isPaused);
-  const [submitting, setSubmitting] = useState(false);
+  const { data: vaultInfo, isLoading } = useVaultInfo();
+  const { execute, submitting } = useAdminAction();
+
+  const paused = vaultInfo?.paused ?? false;
+  const isDataLoading = loading || isLoading;
 
   const toggle = () => {
-    setSubmitting(true);
-    const toastId = toast.loading('Waiting for wallet…');
-    setTimeout(() => {
-      setPaused(!paused);
-      setSubmitting(false);
-      toast.success(`Vault ${paused ? 'activated' : 'paused'}`, {
-        id: toastId,
-        description: `The vault has been ${paused ? 'activated' : 'paused'} successfully.`,
-      });
-    }, 1500);
+    execute(
+      'set-paused',
+      [Cl.bool(!paused)],
+      `Vault ${paused ? 'activated' : 'paused'}`,
+    );
   };
 
   return (
-    <Card className="border-border bg-card" aria-busy={loading}>
+    <Card className="border-border bg-card" aria-busy={isDataLoading}>
       <CardHeader className="flex flex-row items-center justify-between pb-3">
         <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
           Vault Status
         </CardTitle>
-        {loading ? (
+        {isDataLoading ? (
           <Skeleton className="h-5 w-16" />
         ) : (
           <Badge
@@ -47,7 +45,7 @@ export function VaultStatusCard({ loading }: { loading?: boolean }) {
         )}
       </CardHeader>
       <CardContent>
-        {loading ? (
+        {isDataLoading ? (
           <div className="space-y-4">
             <Skeleton className="h-3 w-3/4" />
             <Skeleton className="h-9 w-full" />
