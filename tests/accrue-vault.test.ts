@@ -54,3 +54,43 @@ describe("accrue-vault", () => {
       });
     });
   });
+// --- Admin functions ---
+  describe("admin functions", () => {
+    it("owner can pause the vault", () => {
+      const { result } = simnet.callPublicFn(vaultContract, "set-paused", [Cl.bool(true)], deployer);
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("non-owner cannot pause the vault", () => {
+      const { result } = simnet.callPublicFn(vaultContract, "set-paused", [Cl.bool(true)], wallet1);
+      expect(result).toBeErr(Cl.uint(200));
+    });
+
+    it("owner can set deposit cap", () => {
+      const { result } = simnet.callPublicFn(
+        vaultContract, "set-deposit-cap", [Cl.uint(5000000000)], deployer
+      );
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("non-owner cannot set deposit cap", () => {
+      const { result } = simnet.callPublicFn(
+        vaultContract, "set-deposit-cap", [Cl.uint(5000000000)], wallet1
+      );
+      expect(result).toBeErr(Cl.uint(200));
+    });
+
+    it("owner can set strategist", () => {
+      const { result } = simnet.callPublicFn(
+        vaultContract, "set-strategist", [Cl.principal(wallet1)], deployer
+      );
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("non-owner cannot set strategist", () => {
+      const { result } = simnet.callPublicFn(
+        vaultContract, "set-strategist", [Cl.principal(wallet1)], wallet2
+      );
+      expect(result).toBeErr(Cl.uint(200));
+    });
+  });
