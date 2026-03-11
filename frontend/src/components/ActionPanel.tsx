@@ -6,7 +6,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useWallet } from '@/contexts/WalletContext';
-import { MOCK_VAULT } from '@/lib/mock-data';
+import { fromMicroUnits } from '@/lib/contracts';
+import { useVaultInfo, useSharesOf, useSbtcBalance } from '@/hooks/useContractReads';
 import { formatBTC, formatABTC, sanitizeBTCInput } from '@/lib/format';
 import { ArrowDown, ArrowUp, Loader2, Wallet, ExternalLink, Check, X, ArrowDownUp } from 'lucide-react';
 import { useTransactionManager, type TxStatus } from '@/hooks/useTransactionManager';
@@ -39,10 +40,22 @@ interface ActionPanelProps {
 
 export const ActionPanel = React.forwardRef<HTMLDivElement, ActionPanelProps>(
   ({ onTransaction, loading }, ref) => {
-    const { connected, connect } = useWallet();
+    const { connected, connect, address } = useWallet();
+    const { data: vaultInfo } = useVaultInfo();
+    const { data: sharesRaw } = useSharesOf(address);
+    const { data: sbtcRaw } = useSbtcBalance(address);
     const [tab, setTab] = useState('deposit');
     const [amount, setAmount] = useState('');
     const pendingTxIdRef = useRef<string | null>(null);
+
+    const totalAssets = vaultInfo ? fromMicroUnits(Number(vaultInfo['total-assets'])) : 0;
+    const totalShares = vaultInfo ? fromMicroUnits(Number(vaultInfo['total-shares'])) : 0;
+    const depositCap = vaultInfo ? fromMicroUnits(Number(vaultInfo['deposit-cap'])) : 0;
+    const isPaused = vaultInfo?.paused ?? false;
+    const sharePrice = totalShares > 0 ? totalAssets / totalShares : 1;
+
+    const userSBTCBalance = sbtcRaw ? fromMicroUnits(Number(sbtcRaw)) : 0;
+    const userABTCBalance = sharesRaw ? fromMicroUnits(Number(sharesRaw)) : 0;
 
     const handleConfirmed = useCallback(
       (type: 'deposit' | 'withdraw', txAmount: number, txId: string) => {
@@ -53,7 +66,7 @@ export const ActionPanel = React.forwardRef<HTMLDivElement, ActionPanelProps>(
           id: localId,
           type,
           amount: txAmount,
-          shares: txAmount / MOCK_VAULT.sharePrice,
+          shares: txAmount / sharePrice,
           txHash: `${txId.slice(0, 6)}…${txId.slice(-4)}`,
           timestamp: new Date(),
           status: 'confirmed',
@@ -70,7 +83,7 @@ export const ActionPanel = React.forwardRef<HTMLDivElement, ActionPanelProps>(
           id: localId,
           type,
           amount: txAmount,
-          shares: txAmount / MOCK_VAULT.sharePrice,
+          shares: txAmount / sharePrice,
           txHash: '—',
           timestamp: new Date(),
           status: 'failed',
@@ -87,16 +100,13 @@ export const ActionPanel = React.forwardRef<HTMLDivElement, ActionPanelProps>(
     }, [tab, isInFlight]);
 
     const numAmount = parseFloat(amount) || 0;
-    const sharePrice = MOCK_VAULT.sharePrice;
     const preview =
       tab === 'deposit' ? numAmount / sharePrice : numAmount * sharePrice;
 
-    const capReached = MOCK_VAULT.depositCapUsed >= MOCK_VAULT.depositCap;
-    const userSBTCBalance = 10.0;
-    const userABTCBalance = 24.5;
+    const capReached = totalAssets >= depositCap;
 
     const balance = tab === 'deposit' ? userSBTCBalance : userABTCBalance;
-    const capRemaining = MOCK_VAULT.depositCap - MOCK_VAULT.depositCapUsed;
+    const capRemaining = depositCap - totalAssets;
 
     const validationError = (() => {
       if (!amount || amount === '0') return undefined;
@@ -199,8 +209,8 @@ export const ActionPanel = React.forwardRef<HTMLDivElement, ActionPanelProps>(
       );
     }
 
-    const depositDisabled = MOCK_VAULT.isPaused || capReached || userSBTCBalance <= 0 || isInFlight;
-    const withdrawDisabled = MOCK_VAULT.isPaused || isInFlight;
+    const depositDisabled = isPaused || capReached || userSBTCBalance <= 0 || isInFlight;
+    const withdrawDisabled = isPaused || isInFlight;
 
     return (
       <Card ref={ref} className="border-border bg-card">

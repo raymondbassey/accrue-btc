@@ -5,44 +5,47 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ConfirmDialog } from './ConfirmDialog';
-import { MOCK_VAULT } from '@/lib/mock-data';
+import { useVaultInfo } from '@/hooks/useContractReads';
+import { useAdminAction } from '@/hooks/useAdminAction';
+import { fromMicroUnits, toMicroUnits } from '@/lib/contracts';
 import { formatBTC, sanitizeBTCInput } from '@/lib/format';
 import { isValidBTCAmount } from '@/lib/validation';
-import { toast } from 'sonner';
+import { Cl } from '@stacks/transactions';
 import { Loader2 } from 'lucide-react';
 
 export function DepositCapCard({ loading }: { loading?: boolean }) {
+  const { data: vaultInfo, isLoading } = useVaultInfo();
+  const { execute, submitting } = useAdminAction();
   const [newCap, setNewCap] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const capPercent = (MOCK_VAULT.depositCapUsed / MOCK_VAULT.depositCap) * 100;
+
+  const currentCap = vaultInfo ? fromMicroUnits(Number(vaultInfo['deposit-cap'])) : 0;
+  const currentUsed = vaultInfo ? fromMicroUnits(Number(vaultInfo['total-assets'])) : 0;
+  const capPercent = currentCap > 0 ? (currentUsed / currentCap) * 100 : 0;
+  const isDataLoading = loading || isLoading;
 
   const validation = newCap ? isValidBTCAmount(newCap) : { valid: false };
-  const capTooLow = validation.valid && parseFloat(newCap) < MOCK_VAULT.depositCapUsed;
+  const capTooLow = validation.valid && parseFloat(newCap) < currentUsed;
   const hasError = (newCap && !validation.valid && validation.error) || capTooLow;
   const errorMessage = capTooLow
-    ? `Cap must be ≥ current usage (${formatBTC(MOCK_VAULT.depositCapUsed)})`
+    ? `Cap must be ≥ current usage (${formatBTC(currentUsed)})`
     : validation.error;
   const canSubmit = validation.valid && !capTooLow;
 
   const handleUpdate = () => {
-    setSubmitting(true);
-    const toastId = toast.loading('Waiting for wallet…');
-    setTimeout(() => {
-      setSubmitting(false);
-      setNewCap('');
-      toast.success('Deposit cap updated', { id: toastId });
-    }, 1500);
+    const microCap = toMicroUnits(parseFloat(newCap));
+    execute('set-deposit-cap', [Cl.uint(microCap)], 'Deposit cap updated');
+    setNewCap('');
   };
 
   return (
-    <Card className="border-border bg-card" aria-busy={loading}>
+    <Card className="border-border bg-card" aria-busy={isDataLoading}>
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
           Deposit Cap
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {loading ? (
+        {isDataLoading ? (
           <>
             <div>
               <Skeleton className="h-7 w-32" />
@@ -55,11 +58,11 @@ export function DepositCapCard({ loading }: { loading?: boolean }) {
           <>
             <div>
               <p className="font-mono-financial text-xl font-semibold text-foreground">
-                {formatBTC(MOCK_VAULT.depositCap)}
+                {formatBTC(currentCap)}
               </p>
               <Progress value={capPercent} className="mt-2 h-1.5" />
               <p className="mt-1 text-xs text-muted-foreground">
-                {formatBTC(MOCK_VAULT.depositCapUsed)} used · {capPercent.toFixed(1)}% utilized
+                {formatBTC(currentUsed)} used · {capPercent.toFixed(1)}% utilized
               </p>
             </div>
             <div>
