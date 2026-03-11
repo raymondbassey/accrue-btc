@@ -5,7 +5,9 @@ import {
   getAssetPerShare,
   getDepositOf,
   getSbtcBalance,
+  fetchTxHistory,
   type VaultInfo,
+  type TxHistoryItem,
 } from '@/lib/stacks';
 
 const POLL_INTERVAL = 15_000; // 15 seconds
@@ -68,6 +70,19 @@ export function useSbtcBalance(address: string | null) {
   return useQuery<bigint>({
     queryKey: ['sbtc-balance', address],
     queryFn: () => getSbtcBalance(address!),
+    enabled: !!address,
+    refetchInterval: POLL_INTERVAL,
+    staleTime: 10_000,
+  });
+}
+
+/**
+ * Fetch on-chain tx history for the connected address (deposit/withdraw only).
+ */
+export function useTxHistory(address: string | null) {
+  return useQuery<TxHistoryItem[]>({
+    queryKey: ['tx-history', address],
+    queryFn: () => fetchTxHistory(address!),
     enabled: !!address,
     refetchInterval: POLL_INTERVAL,
     staleTime: 10_000,
