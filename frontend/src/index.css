@@ -1,0 +1,165 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 6% 6%;
+    --foreground: 240 5% 90%;
+
+    --card: 240 5% 10%;
+    --card-foreground: 240 5% 90%;
+
+    --popover: 240 5% 10%;
+    --popover-foreground: 240 5% 90%;
+
+    --primary: 33 94% 53%;
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 240 5% 90%;
+
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 55%;
+
+    --accent: 240 4% 16%;
+    --accent-foreground: 240 5% 90%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 4% 20%;
+    --input: 240 4% 20%;
+    --ring: 33 94% 53%;
+
+    --radius: 0.75rem;
+
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 0%;
+    --warning: 48 96% 53%;
+    --warning-foreground: 0 0% 0%;
+
+    --sidebar-background: 240 5% 8%;
+    --sidebar-foreground: 240 5% 90%;
+    --sidebar-primary: 33 94% 53%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 240 4% 16%;
+    --sidebar-accent-foreground: 240 5% 90%;
+    --sidebar-border: 240 4% 20%;
+    --sidebar-ring: 33 94% 53%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* Focus ring — orange, consistent across all interactive elements */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer utilities {
+  .font-mono-financial {
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Gradient text for hero keyword ── */
+  .text-gradient-primary {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(40 96% 60%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Hover lift micro-interaction ── */
+  .hover-lift {
+    transition: transform 0.25s ease, border-color 0.25s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+
+  /* ── Hover scale micro-interaction ── */
+  .hover-scale {
+    transition: transform 0.25s ease;
+  }
+  .hover-scale:hover {
+    transform: scale(1.08);
+  }
+
+  /* ── Glow on primary buttons ── */
+  .glow-primary {
+    transition: box-shadow 0.3s ease;
+  }
+  .glow-primary:hover {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.25), 0 0 40px hsl(var(--primary) / 0.10);
+  }
+
+  /* ── Animated gradient border ── */
+  .border-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary) / 0.3),
+      transparent 40%,
+      transparent 60%,
+      hsl(var(--primary) / 0.15)
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    animation: glow-pulse 4s ease-in-out infinite;
+  }
+
+  .anim-stagger-1 { animation-delay: 0ms; }
+  .anim-stagger-2 { animation-delay: 75ms; }
+  .anim-stagger-3 { animation-delay: 150ms; }
+  .anim-stagger-4 { animation-delay: 225ms; }
+  .anim-stagger-5 { animation-delay: 300ms; }
+  .anim-stagger-6 { animation-delay: 375ms; }
+  .anim-stagger-7 { animation-delay: 450ms; }
+
+  /* Page transition */
+  @keyframes page-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-page-in {
+    animation: page-in 0.35s ease-out both;
+  }
+
+  /* Styled scrollbar */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(240 4% 20%) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: hsl(240 4% 20%);
+    border-radius: 3px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: hsl(240 4% 30%);
+  }
+}
