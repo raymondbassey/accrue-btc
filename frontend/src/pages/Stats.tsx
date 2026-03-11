@@ -1,9 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { TrendingUp, DollarSign, Coins, Info } from 'lucide-react';
 import { formatBTC } from '@/lib/format';
 import { fromMicroUnits } from '@/lib/contracts';
 import { useVaultInfo } from '@/hooks/useContractReads';
-import { RangeToggle, type Range } from '@/components/stats/RangeToggle';
 import { SummaryCard } from '@/components/stats/SummaryCard';
 import { SummaryCardSkeleton } from '@/components/stats/SummaryCardSkeleton';
 import { ChartSkeleton } from '@/components/stats/ChartSkeleton';
@@ -13,10 +12,7 @@ import { CumDepositsChart } from '@/components/stats/CumDepositsChart';
 import { SharePriceChart } from '@/components/stats/SharePriceChart';
 import type { HistoricalDataPoint } from '@/lib/types';
 
-const RANGE_DAYS: Record<Range, number> = { '7d': 7, '14d': 14, '30d': 30 };
-
 export default function Stats() {
-  const [range, setRange] = useState<Range>('30d');
   const { data: vaultInfo, isLoading } = useVaultInfo();
 
   const totalAssets = vaultInfo ? fromMicroUnits(Number(vaultInfo['total-assets'])) : 0;
@@ -56,9 +52,8 @@ export default function Stats() {
         </p>
       </div>
 
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex items-center">
         <span className="text-xs text-muted-foreground uppercase tracking-wider">Live on-chain data</span>
-        <RangeToggle value={range} onChange={setRange} />
       </div>
 
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

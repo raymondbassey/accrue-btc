@@ -274,7 +274,7 @@ const Landing = () => {
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-center divide-y divide-border sm:flex-row sm:divide-x sm:divide-y-0">
           <AnimatedStat label="Total Value Locked" value={totalAssets} prefix="₿" decimals={8} />
-          <AnimatedStat label="Current APY" value={1.74} suffix="%" decimals={2} />
+          <AnimatedStat label="Total Shares" value={totalShares} decimals={8} />
           <AnimatedStat label="Share Price" value={sharePrice} prefix="₿" decimals={8} />
         </div>
       </section>

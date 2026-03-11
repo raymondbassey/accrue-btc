@@ -12,7 +12,7 @@ const Admin = () => {
   const { connected, isOwner, isStrategist } = useWallet();
   const [loading] = useState(false);
 
-  if (!connected || !isOwner) {
+  if (!connected || (!isOwner && !isStrategist)) {
     return (
       <main className="mx-auto flex max-w-7xl flex-col items-center justify-center px-4 py-24">
         <div className="rounded-full border-2 border-dashed border-border p-4 mb-4">
@@ -22,7 +22,7 @@ const Admin = () => {
         <p className="mt-2 text-sm text-muted-foreground">
           {!connected
             ? 'Connect your wallet to access the admin panel.'
-            : 'Only the vault owner can access this panel.'}
+            : 'Only the vault owner or strategist can access this panel.'}
         </p>
         <Button variant="outline" size="sm" asChild className="mt-6 gap-2">
           <Link to="/">
@@ -46,9 +46,9 @@ const Admin = () => {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <div className="opacity-0 animate-fade-in-up anim-stagger-1"><VaultStatusCard loading={loading} /></div>
-        <div className="opacity-0 animate-fade-in-up anim-stagger-2"><DepositCapCard loading={loading} /></div>
-        <div className="opacity-0 animate-fade-in-up anim-stagger-3"><StrategistCard loading={loading} /></div>
+        {isOwner && <div className="opacity-0 animate-fade-in-up anim-stagger-1"><VaultStatusCard loading={loading} /></div>}
+        {isOwner && <div className="opacity-0 animate-fade-in-up anim-stagger-2"><DepositCapCard loading={loading} /></div>}
+        {isOwner && <div className="opacity-0 animate-fade-in-up anim-stagger-3"><StrategistCard loading={loading} /></div>}
         {isStrategist && <div className="opacity-0 animate-fade-in-up anim-stagger-4"><YieldReportCard loading={loading} /></div>}
       </div>
     </main>
