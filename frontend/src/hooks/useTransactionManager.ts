@@ -1,6 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { toast } from 'sonner';
-import { buildExplorerUrl, getErrorMessage } from '@/lib/contracts';
+import { request } from '@stacks/connect';
+import { Cl } from '@stacks/transactions';
+import { buildExplorerUrl, getErrorMessage, CONTRACTS, toMicroUnits } from '@/lib/contracts';
+import { NETWORK, fetchTxStatus } from '@/lib/stacks';
 
 export type TxStatus =
   | 'idle'
@@ -28,28 +31,22 @@ interface TransactionManagerReturn extends TxState {
 
 const INITIAL: TxState = { status: 'idle', txId: null, type: null, amount: 0 };
 
-function generateMockTxId(): string {
-  const hex = () =>
-    Math.floor(Math.random() * 0xffff)
-      .toString(16)
-      .padStart(4, '0');
-  return `0x${hex()}${hex()}${hex()}${hex()}${hex()}${hex()}${hex()}${hex()}`;
-}
+const POLL_INTERVAL = 3_000; // 3 seconds
+const MAX_POLLS = 60; // 3 minutes max
 
 export function useTransactionManager(
   onConfirmed?: (type: TxType, amount: number, txId: string) => void,
   onFailed?: (type: TxType, amount: number) => void,
 ): TransactionManagerReturn {
   const [state, setState] = useState<TxState>(INITIAL);
-  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const mountedRef = useRef(true);
 
-  // Cleanup on unmount
   useEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
-      timeoutsRef.current.forEach(clearTimeout);
+      if (pollRef.current) clearInterval(pollRef.current);
     };
   }, []);
 
@@ -57,88 +54,135 @@ export function useTransactionManager(
     if (mountedRef.current) setState(updater);
   }, []);
 
-  const schedule = useCallback((fn: () => void, ms: number) => {
-    const id = setTimeout(fn, ms);
-    timeoutsRef.current.push(id);
-    return id;
-  }, []);
-
   const reset = useCallback(() => {
-    timeoutsRef.current.forEach(clearTimeout);
-    timeoutsRef.current = [];
+    if (pollRef.current) {
+      clearInterval(pollRef.current);
+      pollRef.current = null;
+    }
     setState(INITIAL);
   }, []);
 
+  const pollTransaction = useCallback(
+    (txId: string, type: TxType, amount: number) => {
+      let polls = 0;
+      safeSet(prev => ({ ...prev, status: 'confirming' }));
+      const confirmToastId = toast.loading('Confirming transaction…', {
+        id: `confirm-${txId}`,
+      });
+
+      pollRef.current = setInterval(async () => {
+        polls++;
+        if (!mountedRef.current) {
+          if (pollRef.current) clearInterval(pollRef.current);
+          return;
+        }
+
+        const result = await fetchTxStatus(txId);
+
+        if (result.status === 'success') {
+          if (pollRef.current) clearInterval(pollRef.current);
+          toast.dismiss(confirmToastId);
+          safeSet(prev => ({ ...prev, status: 'confirmed' }));
+          toast.success('Transaction confirmed!', { id: `result-${txId}` });
+          onConfirmed?.(type, amount, txId);
+          setTimeout(() => safeSet(() => INITIAL), 2000);
+        } else if (result.status === 'abort_by_response') {
+          if (pollRef.current) clearInterval(pollRef.current);
+          toast.dismiss(confirmToastId);
+          // Parse error code from repr like "(err u205)"
+          const codeMatch = result.error.match(/u(\d+)/);
+          const errMsg = codeMatch
+            ? getErrorMessage(parseInt(codeMatch[1], 10))
+            : result.error;
+          safeSet(prev => ({ ...prev, status: 'failed' }));
+          toast.error('Transaction failed', {
+            description: errMsg,
+            id: `result-${txId}`,
+          });
+          onFailed?.(type, amount);
+          setTimeout(() => safeSet(() => INITIAL), 2000);
+        } else if (result.status === 'abort_by_post_condition') {
+          if (pollRef.current) clearInterval(pollRef.current);
+          toast.dismiss(confirmToastId);
+          safeSet(prev => ({ ...prev, status: 'failed' }));
+          toast.error('Transaction failed', {
+            description: 'Post-condition check failed',
+            id: `result-${txId}`,
+          });
+          onFailed?.(type, amount);
+          setTimeout(() => safeSet(() => INITIAL), 2000);
+        } else if (polls >= MAX_POLLS) {
+          if (pollRef.current) clearInterval(pollRef.current);
+          toast.dismiss(confirmToastId);
+          safeSet(prev => ({ ...prev, status: 'failed' }));
+          toast.error('Transaction timeout', {
+            description: 'Check explorer for final status',
+            id: `result-${txId}`,
+            action: {
+              label: 'View',
+              onClick: () => window.open(buildExplorerUrl(txId), '_blank'),
+            },
+          });
+          onFailed?.(type, amount);
+          setTimeout(() => safeSet(() => INITIAL), 2000);
+        }
+      }, POLL_INTERVAL);
+    },
+    [safeSet, onConfirmed, onFailed],
+  );
+
   const submit = useCallback(
     (type: TxType, amount: number) => {
-      // Clear previous
-      timeoutsRef.current.forEach(clearTimeout);
-      timeoutsRef.current = [];
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+        pollRef.current = null;
+      }
 
-      // 1. Wallet pending
       safeSet(() => ({ status: 'wallet-pending', txId: null, type, amount }));
       const loadingToastId = toast.loading('Waiting for wallet approval…');
 
-      // 2. Submitted (after ~1.5s mock wallet delay)
-      schedule(() => {
-        const txId = generateMockTxId();
-        toast.dismiss(loadingToastId);
+      const microAmount = toMicroUnits(amount);
+      const [contractAddr, contractName] = CONTRACTS.VAULT.split('.');
 
-        safeSet(() => ({ status: 'submitted', txId, type, amount }));
-        toast.success('Transaction submitted', {
-          description: `${txId.slice(0, 10)}…${txId.slice(-4)}`,
-          action: {
-            label: 'View',
-            onClick: () => window.open(buildExplorerUrl(txId), '_blank'),
-          },
-        });
+      const functionName = type === 'deposit' ? 'deposit' : 'withdraw';
+      const functionArgs = [Cl.uint(microAmount)];
 
-        // 3. Confirming (after ~1s)
-        schedule(() => {
-          safeSet((prev) => ({ ...prev, status: 'confirming' }));
-          const confirmToastId = toast.loading('Confirming transaction…', {
-            id: `confirm-${txId}`,
+      (async () => {
+        try {
+          const result = await request('stx_callContract', {
+            contract: `${contractAddr}.${contractName}`,
+            functionName,
+            functionArgs,
+            network: NETWORK,
           });
 
-          // 4. Confirmed or failed (after ~8s of "polling")
-          // Simulate: 90% success, 10% failure
-          const willFail = Math.random() < 0.1;
+          toast.dismiss(loadingToastId);
+          const txId = result.txid;
 
-          schedule(() => {
-            toast.dismiss(confirmToastId);
+          safeSet(() => ({ status: 'submitted', txId, type, amount }));
+          toast.success('Transaction submitted', {
+            description: `${txId.slice(0, 10)}…${txId.slice(-4)}`,
+            action: {
+              label: 'View',
+              onClick: () => window.open(buildExplorerUrl(txId), '_blank'),
+            },
+          });
 
-            if (willFail) {
-              const errorCode = [200, 201, 202, 203, 204, 205, 206][
-                Math.floor(Math.random() * 7)
-              ];
-              safeSet((prev) => ({ ...prev, status: 'failed' }));
-              toast.error('Transaction failed', {
-                description: getErrorMessage(errorCode),
-                id: `result-${txId}`,
-              });
-              onFailed?.(type, amount);
+          // Start polling for confirmation
+          pollTransaction(txId, type, amount);
+        } catch (err: unknown) {
+          toast.dismiss(loadingToastId);
+          safeSet(prev => ({ ...prev, status: 'failed' }));
 
-              // Auto-reset after 2s
-              schedule(() => {
-                safeSet(() => INITIAL);
-              }, 2000);
-            } else {
-              safeSet((prev) => ({ ...prev, status: 'confirmed' }));
-              toast.success('Transaction confirmed!', {
-                id: `result-${txId}`,
-              });
-              onConfirmed?.(type, amount, txId);
-
-              // Auto-reset after 2s
-              schedule(() => {
-                safeSet(() => INITIAL);
-              }, 2000);
-            }
-          }, 8000);
-        }, 1000);
-      }, 1500);
+          const message =
+            err instanceof Error ? err.message : 'Wallet rejected or failed';
+          toast.error('Transaction failed', { description: message });
+          onFailed?.(type, amount);
+          setTimeout(() => safeSet(() => INITIAL), 2000);
+        }
+      })();
     },
-    [safeSet, schedule, onConfirmed, onFailed],
+    [safeSet, pollTransaction, onFailed],
   );
 
   return { ...state, submit, reset };
