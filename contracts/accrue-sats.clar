@@ -149,3 +149,10 @@
                     (map-get? user-total-received recipient)
                 )
             )
+
+        ;; -------------------------------------------------
+        ;; Validation
+        ;; -------------------------------------------------
+
+        ;; Ensure amount is greater than zero
+        (asserts! (> amount u0) err-invalid-amount)
