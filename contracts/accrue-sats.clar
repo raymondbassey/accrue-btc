@@ -170,3 +170,4 @@
         ;; Transfer net amount to recipient
         (try!
             (stx-transfer?
+                net-amount
