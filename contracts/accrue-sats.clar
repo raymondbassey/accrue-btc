@@ -184,3 +184,7 @@
                 (stx-transfer?
                     fee
                     tx-sender
+                    contract-owner
+                )
+            )
+        )
