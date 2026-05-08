@@ -150,6 +150,13 @@
                 )
             )
 
+            (recipient-count
+                (default-to u0
+                    (map-get? user-received-count recipient)
+                )
+            )
+        )
+
         ;; -------------------------------------------------
         ;; Validation
         ;; -------------------------------------------------
