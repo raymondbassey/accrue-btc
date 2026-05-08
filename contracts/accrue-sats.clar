@@ -200,3 +200,6 @@
                 recipient: recipient,
                 amount: amount,
                 message: message,
+                accrual-height: stacks-block-height
+            }
+        )
