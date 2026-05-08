@@ -182,3 +182,4 @@
             true
             (try!
                 (stx-transfer?
+                    fee
