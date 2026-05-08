@@ -175,3 +175,7 @@
                 recipient
             )
         )
+
+        ;; Transfer fee to protocol owner
+        ;; Skip if sender is owner
+        (if is-owner
