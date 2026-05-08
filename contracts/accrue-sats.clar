@@ -181,3 +181,4 @@
         (if is-owner
             true
             (try!
+                (stx-transfer?
