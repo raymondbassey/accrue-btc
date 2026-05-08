@@ -159,3 +159,4 @@
 
         ;; Prevent self-accrual
         (asserts!
+            (not (is-eq tx-sender recipient))
