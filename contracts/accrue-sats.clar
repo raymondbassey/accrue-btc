@@ -120,3 +120,4 @@
 
 (define-public (accrue-sats
     (recipient principal)
+    (amount uint)
