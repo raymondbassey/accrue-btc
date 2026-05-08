@@ -156,3 +156,6 @@
 
         ;; Ensure amount is greater than zero
         (asserts! (> amount u0) err-invalid-amount)
+
+        ;; Prevent self-accrual
+        (asserts!
