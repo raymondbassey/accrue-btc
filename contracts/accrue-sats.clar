@@ -246,3 +246,6 @@
         (var-set
             total-accruals
             (+ accrual-id u1)
+        )
+
+        (var-set
