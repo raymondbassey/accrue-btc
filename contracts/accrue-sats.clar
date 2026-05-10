@@ -294,6 +294,11 @@
 
         total-accrued:
             (default-to u0
+                (map-get? user-total-accrued user)
+            ),
+
+        total-received:
+            (default-to u0
                 (map-get? user-total-received user)
             )
     }
@@ -305,6 +310,7 @@
 (define-read-only (get-protocol-stats)
     {
         total-accruals: (var-get total-accruals),
+        total-volume: (var-get total-volume),
         protocol-revenue: (var-get protocol-revenue)
     }
 )
@@ -335,3 +341,5 @@
 ;;
 ;; Returns fee amount for a transaction.
 (define-read-only (get-fee-for-amount (amount uint))
+    (ok (calculate-fee amount))
+)
