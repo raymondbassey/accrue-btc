@@ -228,3 +228,4 @@
         )
 
         (map-set
+            user-accrual-count
