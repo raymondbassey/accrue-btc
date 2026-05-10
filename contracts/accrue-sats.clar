@@ -230,3 +230,5 @@
         (map-set
             user-accrual-count
             tx-sender
+            (+ sender-count u1)
+        )
