@@ -237,3 +237,10 @@
             user-received-count
             recipient
             (+ recipient-count u1)
+        )
+
+        ;; -------------------------------------------------
+        ;; Update Protocol Statistics
+        ;; -------------------------------------------------
+
+        (var-set
