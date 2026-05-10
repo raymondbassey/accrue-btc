@@ -255,3 +255,4 @@
 
         (var-set
             protocol-revenue
+            (+ (var-get protocol-revenue) fee)
