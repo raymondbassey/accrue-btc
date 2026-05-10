@@ -330,3 +330,8 @@
         )
     )
 )
+
+;; get-fee-for-amount
+;;
+;; Returns fee amount for a transaction.
+(define-read-only (get-fee-for-amount (amount uint))
