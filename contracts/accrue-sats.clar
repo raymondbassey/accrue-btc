@@ -234,3 +234,4 @@
         )
 
         (map-set
+            user-received-count
