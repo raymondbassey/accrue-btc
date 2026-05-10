@@ -324,3 +324,5 @@
 ;;
 ;; Returns total received by a user.
 (define-read-only (get-user-total-received (user principal))
+    (ok
+        (default-to u0
