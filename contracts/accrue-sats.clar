@@ -256,3 +256,9 @@
         (var-set
             protocol-revenue
             (+ (var-get protocol-revenue) fee)
+        )
+
+        ;; Return accrual ID
+        (ok accrual-id)
+    )
+)
