@@ -249,3 +249,4 @@
         )
 
         (var-set
+            total-volume
