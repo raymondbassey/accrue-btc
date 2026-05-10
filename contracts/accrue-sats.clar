@@ -236,3 +236,4 @@
         (map-set
             user-received-count
             recipient
+            (+ recipient-count u1)
