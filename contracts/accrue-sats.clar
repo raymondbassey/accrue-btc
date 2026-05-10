@@ -250,3 +250,5 @@
 
         (var-set
             total-volume
+            (+ (var-get total-volume) amount)
+        )
