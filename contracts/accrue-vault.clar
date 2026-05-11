@@ -25,3 +25,6 @@
 ;; Mainnet:       SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token
 ;; (Clarinet remaps automatically during deployment)
 (define-constant SBTC_TOKEN 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token)
+
+;; --- Data vars ---
+(define-data-var total-assets uint u0)     ;; total sBTC held by vault
