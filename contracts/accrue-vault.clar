@@ -15,3 +15,4 @@
 (define-constant ERR_ZERO_AMOUNT (err u201))
 (define-constant ERR_INSUFFICIENT_SHARES (err u202))
 (define-constant ERR_INSUFFICIENT_ASSETS (err u203))
+(define-constant ERR_VAULT_PAUSED (err u204))
