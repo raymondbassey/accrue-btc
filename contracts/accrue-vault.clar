@@ -18,3 +18,10 @@
 (define-constant ERR_VAULT_PAUSED (err u204))
 (define-constant ERR_DEPOSIT_CAP_REACHED (err u205))
 (define-constant ERR_TRANSFER_FAILED (err u206))
+
+; --- sBTC reference ---
+;; Simnet/Devnet: SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token
+;; Testnet:       ST1F7QA2MDF17S807EPA36TSS8AMEFY4KA9TVGWXT.sbtc-token
+;; Mainnet:       SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token
+;; (Clarinet remaps automatically during deployment)
+(define-constant SBTC_TOKEN 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token)
