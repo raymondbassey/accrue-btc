@@ -68,3 +68,9 @@
     (ok (var-set strategist new-strategist))
   )
 )
+
+;; --- Core vault logic ---
+
+;; Deposit sBTC into the vault
+;; Returns: number of share tokens minted
+(define-public (deposit (amount uint))
