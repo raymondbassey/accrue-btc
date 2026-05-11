@@ -81,3 +81,5 @@
       (current-supply (unwrap-panic (contract-call? .vault-token get-total-supply)))
       (existing-deposit (default-to u0 (map-get? deposits depositor)))
     )
+    ;; Guards
+    (asserts! (not (var-get vault-paused)) ERR_VAULT_PAUSED)
