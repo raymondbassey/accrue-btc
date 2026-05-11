@@ -19,7 +19,7 @@
 (define-constant ERR_DEPOSIT_CAP_REACHED (err u205))
 (define-constant ERR_TRANSFER_FAILED (err u206))
 
-; --- sBTC reference ---
+;; --- sBTC reference ---
 ;; Simnet/Devnet: SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token
 ;; Testnet:       ST1F7QA2MDF17S807EPA36TSS8AMEFY4KA9TVGWXT.sbtc-token
 ;; Mainnet:       SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token
@@ -48,8 +48,8 @@
 ;; --- Admin functions ---
 (define-public (set-paused (paused bool))
   (begin
-  (asserts! (is-owner) ERR_NOT_AUTHORIZED)
-  (ok (var-set vault-paused paused))
+    (asserts! (is-owner) ERR_NOT_AUTHORIZED)
+    (ok (var-set vault-paused paused))
   )
 )
 
@@ -57,7 +57,7 @@
   (begin
     ;; #[filter(new-cap)]
     (asserts! (is-owner) ERR_NOT_AUTHORIZED)
-    (ok (var-set vault-paused paused))
+    (ok (var-set deposit-cap new-cap))
   )
 )
 
@@ -79,6 +79,7 @@
       (depositor tx-sender)
       (current-total (var-get total-assets))
       (current-supply (unwrap-panic (contract-call? .vault-token get-total-supply)))
+      (shares-to-mint (calculate-shares-for-deposit amount current-total current-supply))
       (existing-deposit (default-to u0 (map-get? deposits depositor)))
     )
     ;; Guards
@@ -90,7 +91,7 @@
     (unwrap! (contract-call? 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token transfer amount depositor current-contract none)
       ERR_TRANSFER_FAILED)
 
-      ;; Mint share tokens
+    ;; Mint share tokens
     (unwrap! (contract-call? .vault-token mint-shares shares-to-mint depositor)
       ERR_TRANSFER_FAILED)
 
@@ -99,3 +100,6 @@
     (map-set deposits depositor (+ existing-deposit amount))
 
     (print {event: "deposit", depositor: depositor, amount: amount, shares: shares-to-mint})
+    (ok shares-to-mint)
+  )
+)
