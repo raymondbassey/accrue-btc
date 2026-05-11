@@ -55,3 +55,5 @@
 
 (define-public (set-deposit-cap (new-cap uint))
   (begin
+    ;; #[filter(new-cap)]
+    (asserts! (is-owner) ERR_NOT_AUTHORIZED)
