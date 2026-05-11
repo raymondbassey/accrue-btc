@@ -93,3 +93,6 @@
       ;; Mint share tokens
     (unwrap! (contract-call? .vault-token mint-shares shares-to-mint depositor)
       ERR_TRANSFER_FAILED)
+
+    ;; Update state
+    (var-set total-assets (+ current-total amount))
