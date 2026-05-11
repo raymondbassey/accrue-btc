@@ -47,3 +47,4 @@
 
 ;; --- Admin functions ---
 (define-public (set-paused (paused bool))
+  (begin
