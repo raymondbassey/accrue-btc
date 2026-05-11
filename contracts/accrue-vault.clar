@@ -75,3 +75,5 @@
 ;; Returns: number of share tokens minted
 (define-public (deposit (amount uint))
   (let
+    (
+      (depositor tx-sender)
