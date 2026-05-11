@@ -97,3 +97,5 @@
     ;; Update state
     (var-set total-assets (+ current-total amount))
     (map-set deposits depositor (+ existing-deposit amount))
+
+    (print {event: "deposit", depositor: depositor, amount: amount, shares: shares-to-mint})
