@@ -52,3 +52,5 @@
   (ok (var-set vault-paused paused))
   )
 )
+
+(define-public (set-deposit-cap (new-cap uint))
