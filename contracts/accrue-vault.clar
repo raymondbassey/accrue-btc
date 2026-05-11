@@ -48,3 +48,4 @@
 ;; --- Admin functions ---
 (define-public (set-paused (paused bool))
   (begin
+  (asserts! (is-owner) ERR_NOT_AUTHORIZED)
