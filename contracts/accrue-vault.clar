@@ -83,3 +83,4 @@
     )
     ;; Guards
     (asserts! (not (var-get vault-paused)) ERR_VAULT_PAUSED)
+    (asserts! (> amount u0) ERR_ZERO_AMOUNT)
