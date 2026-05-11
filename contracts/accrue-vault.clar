@@ -40,3 +40,5 @@
 (define-read-only (is-owner)
   (is-eq tx-sender CONTRACT_OWNER)
 )
+
+(define-read-only (is-strategist)
