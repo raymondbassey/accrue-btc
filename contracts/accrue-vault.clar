@@ -12,3 +12,4 @@
 (define-constant PRECISION u100000000) ;; 1e8, matches sBTC 8 decimals
 
 (define-constant ERR_NOT_AUTHORIZED (err u200))
+(define-constant ERR_ZERO_AMOUNT (err u201))
