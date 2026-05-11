@@ -10,3 +10,5 @@
 ;; --- Constants ---
 (define-constant CONTRACT_OWNER tx-sender)
 (define-constant PRECISION u100000000) ;; 1e8, matches sBTC 8 decimals
+
+(define-constant ERR_NOT_AUTHORIZED (err u200))
