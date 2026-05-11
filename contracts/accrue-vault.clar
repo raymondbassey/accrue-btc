@@ -65,3 +65,6 @@
   (begin
     ;; #[filter(new-strategist)]
     (asserts! (is-owner) ERR_NOT_AUTHORIZED)
+    (ok (var-set strategist new-strategist))
+  )
+)
