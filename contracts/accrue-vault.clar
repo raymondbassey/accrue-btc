@@ -62,3 +62,4 @@
 )
 
 (define-public (set-strategist (new-strategist principal))
+  (begin
