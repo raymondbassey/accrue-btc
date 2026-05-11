@@ -54,3 +54,4 @@
 )
 
 (define-public (set-deposit-cap (new-cap uint))
+  (begin
