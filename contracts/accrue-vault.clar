@@ -60,3 +60,5 @@
     (ok (var-set vault-paused paused))
   )
 )
+
+(define-public (set-strategist (new-strategist principal))
