@@ -31,3 +31,7 @@
 (define-data-var vault-paused bool false)   ;; emergency pause
 (define-data-var deposit-cap uint u1000000000) ;; 10 sBTC cap for beta (8 decimals)
 (define-data-var strategist principal CONTRACT_OWNER)
+
+;; --- Data maps ---
+;; Track individual deposit records for transparency
+(define-map deposits principal uint)
