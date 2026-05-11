@@ -84,3 +84,4 @@
     ;; Guards
     (asserts! (not (var-get vault-paused)) ERR_VAULT_PAUSED)
     (asserts! (> amount u0) ERR_ZERO_AMOUNT)
+    (asserts! (<= (+ current-total amount) (var-get deposit-cap)) ERR_DEPOSIT_CAP_REACHED)
