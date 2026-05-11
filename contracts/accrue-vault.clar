@@ -17,3 +17,4 @@
 (define-constant ERR_INSUFFICIENT_ASSETS (err u203))
 (define-constant ERR_VAULT_PAUSED (err u204))
 (define-constant ERR_DEPOSIT_CAP_REACHED (err u205))
+(define-constant ERR_TRANSFER_FAILED (err u206))
