@@ -42,3 +42,5 @@
 )
 
 (define-read-only (is-strategist)
+  (is-eq tx-sender (var-get strategist))
+)
