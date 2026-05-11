@@ -96,3 +96,4 @@
 
     ;; Update state
     (var-set total-assets (+ current-total amount))
+    (map-set deposits depositor (+ existing-deposit amount))
