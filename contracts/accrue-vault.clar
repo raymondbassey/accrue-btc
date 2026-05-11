@@ -30,3 +30,4 @@
 (define-data-var total-assets uint u0)     ;; total sBTC held by vault
 (define-data-var vault-paused bool false)   ;; emergency pause
 (define-data-var deposit-cap uint u1000000000) ;; 10 sBTC cap for beta (8 decimals)
+(define-data-var strategist principal CONTRACT_OWNER)
