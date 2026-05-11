@@ -35,3 +35,6 @@
 ;; --- Data maps ---
 ;; Track individual deposit records for transparency
 (define-map deposits principal uint)
+
+;; --- Authorization helpers ---
+(define-read-only (is-owner)
