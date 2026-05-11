@@ -14,3 +14,4 @@
 (define-constant ERR_NOT_AUTHORIZED (err u200))
 (define-constant ERR_ZERO_AMOUNT (err u201))
 (define-constant ERR_INSUFFICIENT_SHARES (err u202))
+(define-constant ERR_INSUFFICIENT_ASSETS (err u203))
