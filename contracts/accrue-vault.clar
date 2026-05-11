@@ -6,3 +6,5 @@
 ;;   Yield is added to the vault by an authorized strategist.
 
 (impl-trait .vault-trait.vault-trait)
+;; --- Constants ---
+(define-constant CONTRACT_OWNER tx-sender)
