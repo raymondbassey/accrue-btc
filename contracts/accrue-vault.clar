@@ -77,3 +77,4 @@
   (let
     (
       (depositor tx-sender)
+      (current-total (var-get total-assets))
