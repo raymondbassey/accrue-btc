@@ -63,3 +63,5 @@
 
 (define-public (set-strategist (new-strategist principal))
   (begin
+    ;; #[filter(new-strategist)]
+    (asserts! (is-owner) ERR_NOT_AUTHORIZED)
