@@ -44,3 +44,6 @@
 (define-read-only (is-strategist)
   (is-eq tx-sender (var-get strategist))
 )
+
+;; --- Admin functions ---
+(define-public (set-paused (paused bool))
