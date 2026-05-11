@@ -74,3 +74,4 @@
 ;; Deposit sBTC into the vault
 ;; Returns: number of share tokens minted
 (define-public (deposit (amount uint))
+  (let
