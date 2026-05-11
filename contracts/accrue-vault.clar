@@ -78,3 +78,4 @@
     (
       (depositor tx-sender)
       (current-total (var-get total-assets))
+      (current-supply (unwrap-panic (contract-call? .vault-token get-total-supply)))
