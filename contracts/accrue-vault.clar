@@ -38,3 +38,5 @@
 
 ;; --- Authorization helpers ---
 (define-read-only (is-owner)
+  (is-eq tx-sender CONTRACT_OWNER)
+)
