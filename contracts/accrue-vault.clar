@@ -108,3 +108,5 @@
 ;; Returns: amount of sBTC withdrawn
 (define-public (withdraw (shares uint))
   (let
+    (
+      (withdrawer tx-sender)
