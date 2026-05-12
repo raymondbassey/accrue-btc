@@ -116,3 +116,4 @@
     )
     ;; Guards
     (asserts! (not (var-get vault-paused)) ERR_VAULT_PAUSED)
+    (asserts! (> shares u0) ERR_ZERO_AMOUNT)
