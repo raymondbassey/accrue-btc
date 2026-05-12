@@ -147,3 +147,5 @@
 ;; Strategist reports yield earned (adds sBTC to the vault's asset total)
 ;; The actual sBTC must be transferred to the vault separately
 (define-public (report-yield (amount uint))
+  (begin
+    (asserts! (is-strategist) ERR_NOT_AUTHORIZED)
