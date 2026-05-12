@@ -150,3 +150,4 @@
   (begin
     (asserts! (is-strategist) ERR_NOT_AUTHORIZED)
     (asserts! (> amount u0) ERR_ZERO_AMOUNT)
+    (var-set total-assets (+ (var-get total-assets) amount))
