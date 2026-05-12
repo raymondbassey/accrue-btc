@@ -159,3 +159,5 @@
 ;; --- Read-only functions ---
 
 (define-read-only (get-total-assets)
+  (ok (var-get total-assets))
+)
