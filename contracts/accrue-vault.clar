@@ -140,3 +140,6 @@
     )
 
     (print {event: "withdraw", withdrawer: withdrawer, shares: shares, assets: assets-to-return})
+    (ok assets-to-return)
+  )
+)
