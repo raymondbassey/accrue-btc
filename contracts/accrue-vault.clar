@@ -195,3 +195,5 @@
 ;; Calculate shares to mint for a deposit
 ;; If vault is empty, 1:1 ratio. Otherwise proportional to existing pool.
 (define-private (calculate-shares-for-deposit (amount uint) (total-assets-val uint) (total-supply uint))
+  ;; #[filter(amount, total-assets-val, total-supply)]
+  (if (is-eq total-supply u0)
