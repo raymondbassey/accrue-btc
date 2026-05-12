@@ -163,3 +163,5 @@
 )
 
 (define-read-only (get-shares-of (who principal))
+  (contract-call? .vault-token get-balance who)
+)
