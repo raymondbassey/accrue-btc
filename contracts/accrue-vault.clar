@@ -129,3 +129,6 @@
       ((with-ft 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token "sbtc-token" assets-to-return))
       (try! (contract-call? 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token transfer assets-to-return tx-sender withdrawer none))
     ))
+
+    ;; Update state
+    (var-set total-assets (- current-total assets-to-return))
