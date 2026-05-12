@@ -175,3 +175,5 @@
     (ok (calculate-assets-for-shares shares current-total current-supply))
   )
 )
+
+(define-read-only (get-deposit-of (who principal))
