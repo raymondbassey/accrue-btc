@@ -181,3 +181,4 @@
 )
 
 (define-read-only (get-vault-info)
+  (ok {
