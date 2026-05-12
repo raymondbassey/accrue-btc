@@ -114,3 +114,5 @@
       (current-supply (unwrap-panic (contract-call? .vault-token get-total-supply)))
       (assets-to-return (calculate-assets-for-shares shares current-total current-supply))
     )
+    ;; Guards
+    (asserts! (not (var-get vault-paused)) ERR_VAULT_PAUSED)
