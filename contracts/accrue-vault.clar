@@ -138,3 +138,5 @@
         u0
       )
     )
+
+    (print {event: "withdraw", withdrawer: withdrawer, shares: shares, assets: assets-to-return})
