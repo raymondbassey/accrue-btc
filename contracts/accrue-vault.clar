@@ -107,3 +107,4 @@
 ;; Withdraw sBTC from the vault by burning shares
 ;; Returns: amount of sBTC withdrawn
 (define-public (withdraw (shares uint))
+  (let
