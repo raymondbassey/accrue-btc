@@ -186,3 +186,6 @@
     total-shares: (unwrap-panic (contract-call? .vault-token get-total-supply)),
     deposit-cap: (var-get deposit-cap),
     paused: (var-get vault-paused),
+    strategist: (var-get strategist),
+  })
+)
