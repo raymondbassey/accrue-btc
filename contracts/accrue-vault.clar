@@ -179,3 +179,5 @@
 (define-read-only (get-deposit-of (who principal))
   (ok (default-to u0 (map-get? deposits who)))
 )
+
+(define-read-only (get-vault-info)
