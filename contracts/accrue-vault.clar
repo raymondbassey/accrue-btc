@@ -165,3 +165,5 @@
 (define-read-only (get-shares-of (who principal))
   (contract-call? .vault-token get-balance who)
 )
+
+(define-read-only (get-asset-per-share (shares uint))
