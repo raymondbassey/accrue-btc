@@ -149,3 +149,4 @@
 (define-public (report-yield (amount uint))
   (begin
     (asserts! (is-strategist) ERR_NOT_AUTHORIZED)
+    (asserts! (> amount u0) ERR_ZERO_AMOUNT)
