@@ -123,3 +123,6 @@
     ;; Burn share tokens
     (unwrap! (contract-call? .vault-token burn-shares shares withdrawer)
       ERR_TRANSFER_FAILED)
+
+    ;; Transfer sBTC from vault back to withdrawer
+    (try! (as-contract?
