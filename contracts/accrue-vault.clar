@@ -167,3 +167,4 @@
 )
 
 (define-read-only (get-asset-per-share (shares uint))
+  (let
