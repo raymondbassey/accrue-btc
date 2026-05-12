@@ -119,3 +119,6 @@
     (asserts! (> shares u0) ERR_ZERO_AMOUNT)
     (asserts! (<= shares user-shares) ERR_INSUFFICIENT_SHARES)
     (asserts! (<= assets-to-return current-total) ERR_INSUFFICIENT_ASSETS)
+
+    ;; Burn share tokens
+    (unwrap! (contract-call? .vault-token burn-shares shares withdrawer)
