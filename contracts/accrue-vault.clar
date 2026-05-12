@@ -132,3 +132,4 @@
 
     ;; Update state
     (var-set total-assets (- current-total assets-to-return))
+    (map-set deposits withdrawer
