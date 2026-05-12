@@ -112,6 +112,7 @@
       (withdrawer tx-sender)
       (current-total (var-get total-assets))
       (current-supply (unwrap-panic (contract-call? .vault-token get-total-supply)))
+      (user-shares (unwrap-panic (contract-call? .vault-token get-balance withdrawer)))
       (assets-to-return (calculate-assets-for-shares shares current-total current-supply))
     )
     ;; Guards
@@ -204,5 +205,10 @@
 
 ;; Calculate sBTC to return for burning shares
 (define-private (calculate-assets-for-shares (shares uint) (total-assets-val uint) (total-supply uint))
-;; #[filter(shares, total-assets-val, total-supply)]
+  ;; #[filter(shares, total-assets-val, total-supply)]
   (if (is-eq total-supply u0)
+    u0
+    (/ (* shares total-assets-val) total-supply)
+  )
+)
+
