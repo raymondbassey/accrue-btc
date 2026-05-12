@@ -171,3 +171,7 @@
     (
       (current-total (var-get total-assets))
       (current-supply (unwrap-panic (contract-call? .vault-token get-total-supply)))
+    )
+    (ok (calculate-assets-for-shares shares current-total current-supply))
+  )
+)
