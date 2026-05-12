@@ -184,3 +184,4 @@
   (ok {
     total-assets: (var-get total-assets),
     total-shares: (unwrap-panic (contract-call? .vault-token get-total-supply)),
+    deposit-cap: (var-get deposit-cap),
