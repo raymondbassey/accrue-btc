@@ -110,3 +110,4 @@
   (let
     (
       (withdrawer tx-sender)
+      (current-total (var-get total-assets))
