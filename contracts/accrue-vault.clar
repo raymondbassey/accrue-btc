@@ -133,3 +133,4 @@
     ;; Update state
     (var-set total-assets (- current-total assets-to-return))
     (map-set deposits withdrawer
+      (if (>= (default-to u0 (map-get? deposits withdrawer)) assets-to-return)
