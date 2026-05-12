@@ -183,3 +183,4 @@
 (define-read-only (get-vault-info)
   (ok {
     total-assets: (var-get total-assets),
+    total-shares: (unwrap-panic (contract-call? .vault-token get-total-supply)),
