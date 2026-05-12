@@ -182,3 +182,4 @@
 
 (define-read-only (get-vault-info)
   (ok {
+    total-assets: (var-get total-assets),
