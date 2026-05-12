@@ -126,3 +126,4 @@
 
     ;; Transfer sBTC from vault back to withdrawer
     (try! (as-contract?
+      ((with-ft 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token "sbtc-token" assets-to-return))
