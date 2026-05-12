@@ -122,3 +122,4 @@
 
     ;; Burn share tokens
     (unwrap! (contract-call? .vault-token burn-shares shares withdrawer)
+      ERR_TRANSFER_FAILED)
