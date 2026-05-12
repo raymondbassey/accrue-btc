@@ -201,3 +201,6 @@
     (/ (* amount total-supply) total-assets-val)
   )
 )
+
+;; Calculate sBTC to return for burning shares
+(define-private (calculate-assets-for-shares (shares uint) (total-assets-val uint) (total-supply uint))
