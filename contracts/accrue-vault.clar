@@ -197,3 +197,7 @@
 (define-private (calculate-shares-for-deposit (amount uint) (total-assets-val uint) (total-supply uint))
   ;; #[filter(amount, total-assets-val, total-supply)]
   (if (is-eq total-supply u0)
+    amount  ;; First deposit: 1:1
+    (/ (* amount total-supply) total-assets-val)
+  )
+)
