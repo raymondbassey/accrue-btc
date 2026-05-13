@@ -17,3 +17,5 @@
 (define-constant CONTRACT_OWNER tx-sender)
 (define-constant ERR_NOT_AUTHORIZED (err u100))
 (define-constant ERR_NOT_TOKEN_OWNER (err u101))
+
+(define-constant TOKEN_NAME "AccrueBTC Share")
