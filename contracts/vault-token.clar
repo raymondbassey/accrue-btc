@@ -22,3 +22,7 @@
 (define-constant TOKEN_SYMBOL "aBTC")
 (define-constant TOKEN_DECIMALS u8) ;; matches sBTC precision
 (define-constant TOKEN_URI u"https://accruebtc.com/metadata.json")
+
+;; --- Data vars ---
+;; The vault contract principal authorized to mint/burn
+(define-data-var vault-address principal CONTRACT_OWNER)
