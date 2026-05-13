@@ -21,3 +21,4 @@
 (define-constant TOKEN_NAME "AccrueBTC Share")
 (define-constant TOKEN_SYMBOL "aBTC")
 (define-constant TOKEN_DECIMALS u8) ;; matches sBTC precision
+(define-constant TOKEN_URI u"https://accruebtc.com/metadata.json")
