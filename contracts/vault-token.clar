@@ -9,3 +9,6 @@
 ;; Testnet:       ST1NXBK3K5YYMD6FD41MVNP3JS1GABZ8TRVX023PT.sip-010-trait-ft-standard
 ;; (Clarinet remaps automatically during deployment)
 (impl-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
+
+;; --- Token definition ---
+(define-fungible-token accrue-share)
