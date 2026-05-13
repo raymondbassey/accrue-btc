@@ -56,3 +56,6 @@
   (begin
     ;; #[filter(amount, owner)]
     (asserts! (is-vault-caller) ERR_NOT_AUTHORIZED)
+    (ft-burn? accrue-share amount owner)
+  )
+)
