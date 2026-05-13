@@ -50,3 +50,6 @@
     (ft-mint? accrue-share amount recipient)
   )
 )
+
+;; Burn shares from a withdrawer (only callable by vault contract)
+(define-public (burn-shares (amount uint) (owner principal))
