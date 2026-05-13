@@ -34,3 +34,5 @@
 
 ;; Allow contract owner to set the vault address (one-time setup)
 (define-public (set-vault-address (new-vault principal))
+(begin
+    ;; #[filter(new-vault)]
