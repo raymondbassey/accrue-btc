@@ -34,6 +34,9 @@
 
 ;; Allow contract owner to set the vault address (one-time setup)
 (define-public (set-vault-address (new-vault principal))
-(begin
+  (begin
     ;; #[filter(new-vault)]
     (asserts! (is-eq tx-sender CONTRACT_OWNER) ERR_NOT_AUTHORIZED)
+    (ok (var-set vault-address new-vault))
+  )
+)
