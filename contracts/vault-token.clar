@@ -36,3 +36,4 @@
 (define-public (set-vault-address (new-vault principal))
 (begin
     ;; #[filter(new-vault)]
+    (asserts! (is-eq tx-sender CONTRACT_OWNER) ERR_NOT_AUTHORIZED)
