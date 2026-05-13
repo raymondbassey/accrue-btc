@@ -19,3 +19,4 @@
 (define-constant ERR_NOT_TOKEN_OWNER (err u101))
 
 (define-constant TOKEN_NAME "AccrueBTC Share")
+(define-constant TOKEN_SYMBOL "aBTC")
