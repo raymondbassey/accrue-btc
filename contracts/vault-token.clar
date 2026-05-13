@@ -31,3 +31,6 @@
 (define-read-only (is-vault-caller)
   (is-eq contract-caller (var-get vault-address))
 )
+
+;; Allow contract owner to set the vault address (one-time setup)
+(define-public (set-vault-address (new-vault principal))
