@@ -29,3 +29,5 @@
 
 ;; --- Authorization ---
 (define-read-only (is-vault-caller)
+  (is-eq contract-caller (var-get vault-address))
+)
