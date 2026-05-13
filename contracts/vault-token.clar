@@ -12,3 +12,6 @@
 
 ;; --- Token definition ---
 (define-fungible-token accrue-share)
+
+;; --- Constants ---
+(define-constant CONTRACT_OWNER tx-sender)
