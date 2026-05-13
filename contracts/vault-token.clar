@@ -54,3 +54,5 @@
 ;; Burn shares from a withdrawer (only callable by vault contract)
 (define-public (burn-shares (amount uint) (owner principal))
   (begin
+    ;; #[filter(amount, owner)]
+    (asserts! (is-vault-caller) ERR_NOT_AUTHORIZED)
