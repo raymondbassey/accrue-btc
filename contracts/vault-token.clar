@@ -45,3 +45,5 @@
 ;; Mint shares to a depositor (only callable by vault contract)
 (define-public (mint-shares (amount uint) (recipient principal))
   (begin
+     ;; #[filter(new-vault)]
+    (asserts! (is-eq tx-sender CONTRACT_OWNER) ERR_NOT_AUTHORIZED)
