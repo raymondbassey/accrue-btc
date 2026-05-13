@@ -26,3 +26,6 @@
 ;; --- Data vars ---
 ;; The vault contract principal authorized to mint/burn
 (define-data-var vault-address principal CONTRACT_OWNER)
+
+;; --- Authorization ---
+(define-read-only (is-vault-caller)
