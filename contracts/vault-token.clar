@@ -87,3 +87,5 @@
 )
 
 (define-read-only (get-decimals)
+  (ok TOKEN_DECIMALS)
+)
