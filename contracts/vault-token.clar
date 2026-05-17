@@ -89,3 +89,5 @@
 (define-read-only (get-decimals)
   (ok TOKEN_DECIMALS)
 )
+
+(define-read-only (get-balance (who principal))
