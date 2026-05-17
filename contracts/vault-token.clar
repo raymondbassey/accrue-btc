@@ -59,3 +59,6 @@
     (ft-burn? accrue-share amount owner)
   )
 )
+
+;; --- SIP-010 Interface ---
+(define-public (transfer
