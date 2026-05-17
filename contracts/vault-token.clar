@@ -81,3 +81,5 @@
 (define-read-only (get-name)
   (ok TOKEN_NAME)
 )
+
+(define-read-only (get-symbol)
