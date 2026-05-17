@@ -7,3 +7,6 @@
   (
     ;; Deposit sBTC into the vault, returns shares minted
     (deposit (uint) (response uint uint))
+
+    ;; Withdraw sBTC by burning shares, returns sBTC amount
+    (withdraw (uint) (response uint uint))
