@@ -79,3 +79,5 @@
 )
 
 (define-read-only (get-name)
+  (ok TOKEN_NAME)
+)
