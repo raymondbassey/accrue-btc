@@ -10,3 +10,6 @@
 
     ;; Withdraw sBTC by burning shares, returns sBTC amount
     (withdraw (uint) (response uint uint))
+
+    ;; Get total sBTC held by the vault
+    (get-total-assets () (response uint uint))
