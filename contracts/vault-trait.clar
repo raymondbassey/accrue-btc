@@ -16,3 +16,8 @@
 
     ;; Get share balance for a depositor
     (get-shares-of (principal) (response uint uint))
+
+    ;; Get the sBTC value of a given number of shares
+    (get-asset-per-share (uint) (response uint uint))
+  )
+)
