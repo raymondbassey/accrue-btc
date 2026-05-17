@@ -70,3 +70,5 @@
   (begin
     ;; #[filter(amount, recipient)]
     (asserts! (or (is-eq tx-sender sender) (is-eq contract-caller sender))
+      ERR_NOT_TOKEN_OWNER
+    )
