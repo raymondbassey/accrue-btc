@@ -4,3 +4,6 @@
 ;; description: Defines the public API that any AccrueBTC vault implementation must satisfy.
 
 (define-trait vault-trait
+  (
+    ;; Deposit sBTC into the vault, returns shares minted
+    (deposit (uint) (response uint uint))
