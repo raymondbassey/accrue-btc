@@ -67,3 +67,6 @@
     (recipient principal)
     (memo (optional (buff 34)))
   )
+  (begin
+    ;; #[filter(amount, recipient)]
+    (asserts! (or (is-eq tx-sender sender) (is-eq contract-caller sender))
