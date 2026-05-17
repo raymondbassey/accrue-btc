@@ -64,3 +64,4 @@
 (define-public (transfer
   (amount uint)
   (sender principal)
+  (recipient principal)
