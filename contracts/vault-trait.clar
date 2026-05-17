@@ -13,3 +13,6 @@
 
     ;; Get total sBTC held by the vault
     (get-total-assets () (response uint uint))
+
+    ;; Get share balance for a depositor
+    (get-shares-of (principal) (response uint uint))
