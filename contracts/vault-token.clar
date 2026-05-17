@@ -99,3 +99,6 @@
 )
 
 (define-read-only (get-token-uri)
+  (ok (some TOKEN_URI))
+)
+
