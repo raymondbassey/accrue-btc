@@ -62,3 +62,4 @@
 
 ;; --- SIP-010 Interface ---
 (define-public (transfer
+  (amount uint)
