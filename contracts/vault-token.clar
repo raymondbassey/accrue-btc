@@ -73,3 +73,4 @@
       ERR_NOT_TOKEN_OWNER
     )
     (try! (ft-transfer? accrue-share amount sender recipient))
+    (match memo to-print (print to-print) 0x)
