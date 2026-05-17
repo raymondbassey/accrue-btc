@@ -62,6 +62,8 @@
 
 ;; --- SIP-010 Interface ---
 (define-public (transfer
-  (amount uint)
-  (sender principal)
-  (recipient principal)
+    (amount uint)
+    (sender principal)
+    (recipient principal)
+    (memo (optional (buff 34)))
+  )
