@@ -23,3 +23,8 @@ export function StrategistCard({ loading }: { loading?: boolean }) {
   const hasInput = newAddr.trim().length > 0;
   const isValid = isValidStacksPrincipal(newAddr);
   const hasError = hasInput && !isValid;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(strategistAddress);
+    toast.success('Address copied');
+  };
