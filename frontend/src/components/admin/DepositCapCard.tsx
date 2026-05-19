@@ -17,3 +17,8 @@ export function DepositCapCard({ loading }: { loading?: boolean }) {
   const { data: vaultInfo, isLoading } = useVaultInfo();
   const { execute, submitting } = useAdminAction();
   const [newCap, setNewCap] = useState('');
+
+  const currentCap = vaultInfo ? fromMicroUnits(Number(vaultInfo['deposit-cap'])) : 0;
+  const currentUsed = vaultInfo ? fromMicroUnits(Number(vaultInfo['total-assets'])) : 0;
+  const capPercent = currentCap > 0 ? (currentUsed / currentCap) * 100 : 0;
+  const isDataLoading = loading || isLoading;
