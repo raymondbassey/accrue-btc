@@ -75,3 +75,17 @@ export function DepositCapCard({ loading }: { loading?: boolean }) {
                   aria-label="New deposit cap"
                   aria-invalid={!!hasError}
                 />
+                <ConfirmDialog
+                  trigger={
+                    <Button size="sm" disabled={!canSubmit || submitting} aria-busy={submitting}>
+                      {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Update'}
+                    </Button>
+                  }
+                  title="Update Deposit Cap?"
+                  description={`Set the new deposit cap to ${formatBTC(parseFloat(newCap) || 0)}?`}
+                  confirmLabel="Update Cap"
+                  loading={submitting}
+                  onConfirm={handleUpdate}
+                  disabled={!canSubmit}
+                />
+              </div>
