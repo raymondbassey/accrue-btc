@@ -65,3 +65,13 @@ export function DepositCapCard({ loading }: { loading?: boolean }) {
                 {formatBTC(currentUsed)} used · {capPercent.toFixed(1)}% utilized
               </p>
             </div>
+            <div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="New cap (sBTC)"
+                  value={newCap}
+                  onChange={e => setNewCap(sanitizeBTCInput(e.target.value))}
+                  className={`text-right font-mono-financial text-sm ${hasError ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                  aria-label="New deposit cap"
+                  aria-invalid={!!hasError}
+                />
