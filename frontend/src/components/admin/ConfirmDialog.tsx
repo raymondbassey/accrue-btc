@@ -34,3 +34,15 @@ export function ConfirmDialog({
   onConfirm,
   disabled,
 }: ConfirmDialogProps) {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild disabled={disabled}>
+        {trigger}
+      </AlertDialogTrigger>
+      <AlertDialogContent className="border-border bg-card">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-foreground">{title}</AlertDialogTitle>
+          <AlertDialogDescription className="text-muted-foreground">
+            {description}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
