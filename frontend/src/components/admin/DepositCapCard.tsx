@@ -12,3 +12,8 @@ import { formatBTC, sanitizeBTCInput } from '@/lib/format';
 import { isValidBTCAmount } from '@/lib/validation';
 import { Cl } from '@stacks/transactions';
 import { Loader2 } from 'lucide-react';
+
+export function DepositCapCard({ loading }: { loading?: boolean }) {
+  const { data: vaultInfo, isLoading } = useVaultInfo();
+  const { execute, submitting } = useAdminAction();
+  const [newCap, setNewCap] = useState('');
