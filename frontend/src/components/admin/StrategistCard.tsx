@@ -11,3 +11,8 @@ import { isValidStacksPrincipal } from '@/lib/validation';
 import { Cl } from '@stacks/transactions';
 import { toast } from 'sonner';
 import { Copy, Loader2 } from 'lucide-react';
+
+export function StrategistCard({ loading }: { loading?: boolean }) {
+  const { data: vaultInfo, isLoading } = useVaultInfo();
+  const { execute, submitting } = useAdminAction();
+  const [newAddr, setNewAddr] = useState('');
