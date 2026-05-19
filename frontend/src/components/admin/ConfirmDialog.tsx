@@ -23,3 +23,14 @@ interface ConfirmDialogProps {
   onConfirm: () => void;
   disabled?: boolean;
 }
+
+export function ConfirmDialog({
+  trigger,
+  title,
+  description,
+  confirmLabel = 'Confirm',
+  variant = 'default',
+  loading,
+  onConfirm,
+  disabled,
+}: ConfirmDialogProps) {
