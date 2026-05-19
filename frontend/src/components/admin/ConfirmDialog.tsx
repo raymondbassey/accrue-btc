@@ -46,3 +46,16 @@ export function ConfirmDialog({
             {description}
           </AlertDialogDescription>
         </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel className="border-border text-muted-foreground">
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={onConfirm}
+            disabled={loading}
+            className={
+              variant === 'destructive'
+                ? 'bg-destructive/10 text-destructive hover:bg-destructive/20'
+                : ''
+            }
+          ></AlertDialogAction>
