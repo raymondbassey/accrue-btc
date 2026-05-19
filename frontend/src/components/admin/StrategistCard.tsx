@@ -19,3 +19,7 @@ export function StrategistCard({ loading }: { loading?: boolean }) {
 
   const strategistAddress = vaultInfo?.strategist ?? '';
   const isDataLoading = loading || isLoading;
+
+  const hasInput = newAddr.trim().length > 0;
+  const isValid = isValidStacksPrincipal(newAddr);
+  const hasError = hasInput && !isValid;
