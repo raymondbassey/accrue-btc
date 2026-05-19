@@ -37,3 +37,11 @@ export function StrategistCard({ loading }: { loading?: boolean }) {
     );
     setNewAddr('');
   };
+
+  return (
+    <Card className="border-border bg-card" aria-busy={isDataLoading}>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+          Strategist
+        </CardTitle>
+      </CardHeader>
