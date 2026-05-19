@@ -30,3 +30,9 @@ export function DepositCapCard({ loading }: { loading?: boolean }) {
     ? `Cap must be ≥ current usage (${formatBTC(currentUsed)})`
     : validation.error;
   const canSubmit = validation.valid && !capTooLow;
+
+  const handleUpdate = () => {
+    const microCap = toMicroUnits(parseFloat(newCap));
+    execute('set-deposit-cap', [Cl.uint(microCap)], 'Deposit cap updated');
+    setNewCap('');
+  };
