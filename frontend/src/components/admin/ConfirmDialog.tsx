@@ -58,4 +58,12 @@ export function ConfirmDialog({
                 ? 'bg-destructive/10 text-destructive hover:bg-destructive/20'
                 : ''
             }
-          ></AlertDialogAction>
+          >
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {confirmLabel}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
