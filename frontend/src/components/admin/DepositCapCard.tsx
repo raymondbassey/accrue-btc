@@ -22,3 +22,7 @@ export function DepositCapCard({ loading }: { loading?: boolean }) {
   const currentUsed = vaultInfo ? fromMicroUnits(Number(vaultInfo['total-assets'])) : 0;
   const capPercent = currentCap > 0 ? (currentUsed / currentCap) * 100 : 0;
   const isDataLoading = loading || isLoading;
+
+  const validation = newCap ? isValidBTCAmount(newCap) : { valid: false };
+  const capTooLow = validation.valid && parseFloat(newCap) < currentUsed;
+  const hasError = (newCap && !validation.valid && validation.error) || capTooLow;
