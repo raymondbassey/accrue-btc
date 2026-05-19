@@ -28,3 +28,12 @@ export function StrategistCard({ loading }: { loading?: boolean }) {
     navigator.clipboard.writeText(strategistAddress);
     toast.success('Address copied');
   };
+
+  const handleUpdate = () => {
+    execute(
+      'set-strategist',
+      [Cl.principal(newAddr)],
+      'Strategist updated',
+    );
+    setNewAddr('');
+  };
