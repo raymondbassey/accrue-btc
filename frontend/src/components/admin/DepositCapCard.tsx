@@ -56,7 +56,7 @@ export function DepositCapCard({ loading }: { loading?: boolean }) {
           </>
         ) : (
           <>
-          <div>
+            <div>
               <p className="font-mono-financial text-xl font-semibold text-foreground">
                 {formatBTC(currentCap)}
               </p>
@@ -89,3 +89,13 @@ export function DepositCapCard({ loading }: { loading?: boolean }) {
                   disabled={!canSubmit}
                 />
               </div>
+              {hasError && (
+                <p className="mt-1 text-xs text-destructive">{errorMessage}</p>
+              )}
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
