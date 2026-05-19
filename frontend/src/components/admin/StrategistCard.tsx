@@ -52,4 +52,12 @@ export function StrategistCard({ loading }: { loading?: boolean }) {
             <Skeleton className="h-9 w-full" />
           </>
         ) : (
-          <></>
+          <>
+          <div className="flex items-center gap-2">
+              <code className="flex-1 truncate rounded border border-border bg-background px-3 py-2 font-mono-financial text-xs text-foreground">
+                {truncateAddress(strategistAddress, 8)}
+              </code>
+              <Button variant="outline" size="icon" onClick={handleCopy} className="shrink-0" aria-label="Copy strategist address">
+                <Copy className="h-4 w-4" />
+              </Button>
+            </div>
