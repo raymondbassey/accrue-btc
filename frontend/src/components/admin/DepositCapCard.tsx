@@ -44,4 +44,15 @@ export function DepositCapCard({ loading }: { loading?: boolean }) {
           Deposit Cap
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4"></CardContent>
+      <CardContent className="space-y-4">
+        {isDataLoading ? (
+          <>
+            <div>
+              <Skeleton className="h-7 w-32" />
+              <Skeleton className="mt-2 h-1.5 w-full rounded-full" />
+              <Skeleton className="mt-1 h-3 w-40" />
+            </div>
+            <Skeleton className="h-9 w-full" />
+          </>
+        ) : (
+          <>
