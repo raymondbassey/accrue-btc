@@ -16,3 +16,6 @@ export function StrategistCard({ loading }: { loading?: boolean }) {
   const { data: vaultInfo, isLoading } = useVaultInfo();
   const { execute, submitting } = useAdminAction();
   const [newAddr, setNewAddr] = useState('');
+
+  const strategistAddress = vaultInfo?.strategist ?? '';
+  const isDataLoading = loading || isLoading;
