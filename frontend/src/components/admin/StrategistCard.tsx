@@ -45,3 +45,11 @@ export function StrategistCard({ loading }: { loading?: boolean }) {
           Strategist
         </CardTitle>
       </CardHeader>
+      <CardContent className="space-y-4">
+        {isDataLoading ? (
+          <>
+            <Skeleton className="h-9 w-full" />
+            <Skeleton className="h-9 w-full" />
+          </>
+        ) : (
+          <></>
