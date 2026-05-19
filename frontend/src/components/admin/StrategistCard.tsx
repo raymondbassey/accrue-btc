@@ -71,3 +71,17 @@ export function StrategistCard({ loading }: { loading?: boolean }) {
                   aria-label="New strategist address"
                   aria-invalid={hasError}
                 />
+                <ConfirmDialog
+                  trigger={
+                    <Button size="sm" disabled={!isValid || submitting} aria-busy={submitting}>
+                      {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Update'}
+                    </Button>
+                  }
+                  title="Update Strategist?"
+                  description={`Change the vault strategist to ${truncateAddress(newAddr || '', 6)}?`}
+                  confirmLabel="Update Strategist"
+                  loading={submitting}
+                  onConfirm={handleUpdate}
+                  disabled={!isValid}
+                />
+              </div>
