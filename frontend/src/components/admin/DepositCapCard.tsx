@@ -26,3 +26,7 @@ export function DepositCapCard({ loading }: { loading?: boolean }) {
   const validation = newCap ? isValidBTCAmount(newCap) : { valid: false };
   const capTooLow = validation.valid && parseFloat(newCap) < currentUsed;
   const hasError = (newCap && !validation.valid && validation.error) || capTooLow;
+  const errorMessage = capTooLow
+    ? `Cap must be ≥ current usage (${formatBTC(currentUsed)})`
+    : validation.error;
+  const canSubmit = validation.valid && !capTooLow;
