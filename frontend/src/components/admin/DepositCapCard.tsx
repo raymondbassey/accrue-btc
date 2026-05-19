@@ -36,3 +36,12 @@ export function DepositCapCard({ loading }: { loading?: boolean }) {
     execute('set-deposit-cap', [Cl.uint(microCap)], 'Deposit cap updated');
     setNewCap('');
   };
+
+  return (
+    <Card className="border-border bg-card" aria-busy={isDataLoading}>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+          Deposit Cap
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4"></CardContent>
