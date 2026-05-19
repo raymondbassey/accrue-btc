@@ -56,3 +56,12 @@ export function DepositCapCard({ loading }: { loading?: boolean }) {
           </>
         ) : (
           <>
+          <div>
+              <p className="font-mono-financial text-xl font-semibold text-foreground">
+                {formatBTC(currentCap)}
+              </p>
+              <Progress value={capPercent} className="mt-2 h-1.5" />
+              <p className="mt-1 text-xs text-muted-foreground">
+                {formatBTC(currentUsed)} used · {capPercent.toFixed(1)}% utilized
+              </p>
+            </div>
