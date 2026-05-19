@@ -61,3 +61,13 @@ export function StrategistCard({ loading }: { loading?: boolean }) {
                 <Copy className="h-4 w-4" />
               </Button>
             </div>
+            <div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="New strategist address"
+                  value={newAddr}
+                  onChange={e => setNewAddr(e.target.value)}
+                  className={`font-mono-financial text-xs ${hasError ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                  aria-label="New strategist address"
+                  aria-invalid={hasError}
+                />
