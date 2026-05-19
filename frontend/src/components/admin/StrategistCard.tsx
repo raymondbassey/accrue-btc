@@ -53,7 +53,7 @@ export function StrategistCard({ loading }: { loading?: boolean }) {
           </>
         ) : (
           <>
-          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <code className="flex-1 truncate rounded border border-border bg-background px-3 py-2 font-mono-financial text-xs text-foreground">
                 {truncateAddress(strategistAddress, 8)}
               </code>
@@ -85,3 +85,13 @@ export function StrategistCard({ loading }: { loading?: boolean }) {
                   disabled={!isValid}
                 />
               </div>
+              {hasError && (
+                <p className="mt-1 text-xs text-destructive">Invalid Stacks address</p>
+              )}
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
