@@ -31,3 +31,13 @@ export function VaultStatusCard({ loading }: { loading?: boolean }) {
         </CardTitle>
         {isDataLoading ? (
           <Skeleton className="h-5 w-16" />
+
+          ) : (
+          <Badge
+            variant="outline"
+            className={
+              paused
+                ? 'border-destructive/30 bg-destructive/10 text-destructive'
+                : 'border-success/30 bg-success/10 text-success'
+            }
+          ></Badge>
