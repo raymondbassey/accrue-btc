@@ -23,3 +23,12 @@ export function YieldReportCard({ loading }: { loading?: boolean }) {
     execute('report-yield', [Cl.uint(microAmount)], `${amount} sBTC yield reported`);
     setAmount('');
   };
+
+   return (
+    <Card className="border-border bg-card" aria-busy={loading}>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+          Report Yield
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4"></CardContent>
