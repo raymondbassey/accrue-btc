@@ -24,23 +24,13 @@ export function YieldReportCard({ loading }: { loading?: boolean }) {
     setAmount('');
   };
 
-   return (
+  return (
     <Card className="border-border bg-card" aria-busy={loading}>
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
           Report Yield
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4"></CardContent>
-
-    return (
-    <Card className="border-border bg-card" aria-busy={loading}>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
-          Report Yield
-        </CardTitle>
-      </CardHeader>
-
       <CardContent className="space-y-4">
         {loading ? (
           <>
@@ -48,11 +38,10 @@ export function YieldReportCard({ loading }: { loading?: boolean }) {
             <Skeleton className="h-9 w-full" />
           </>
         ) : (
-
-          <p className="text-xs text-muted-foreground">
+          <>
+            <p className="text-xs text-muted-foreground">
               Report earned yield to update the vault share price. Only the strategist can perform this action.
             </p>
-            <div></div>
             <div>
               <div className="flex gap-2">
                 <Input
@@ -77,3 +66,13 @@ export function YieldReportCard({ loading }: { loading?: boolean }) {
                   disabled={!validation.valid}
                 />
               </div>
+              {hasError && (
+                <p className="mt-1 text-xs text-destructive">{validation.error}</p>
+              )}
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
