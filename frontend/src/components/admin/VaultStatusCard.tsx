@@ -57,3 +57,11 @@ export function VaultStatusCard({ loading }: { loading?: boolean }) {
                 ? 'Vault is paused. All deposits and withdrawals are disabled.'
                 : 'Vault is active and accepting deposits and withdrawals.'}
             </p>
+            <ConfirmDialog
+              trigger={
+                <Button
+                  variant={paused ? 'default' : 'destructive'}
+                  size="sm"
+                  className="w-full"
+                  disabled={submitting}
+                >
