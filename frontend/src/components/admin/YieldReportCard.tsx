@@ -63,3 +63,17 @@ export function YieldReportCard({ loading }: { loading?: boolean }) {
                   aria-label="Yield amount"
                   aria-invalid={!!hasError}
                 />
+                <ConfirmDialog
+                  trigger={
+                    <Button size="sm" disabled={!validation.valid || submitting} aria-busy={submitting}>
+                      {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Report'}
+                    </Button>
+                  }
+                  title="Report Yield?"
+                  description={`Report ${amount} sBTC yield to the vault? This will update the share price.`}
+                  confirmLabel="Report Yield"
+                  loading={submitting}
+                  onConfirm={handleSubmit}
+                  disabled={!validation.valid}
+                />
+              </div>
