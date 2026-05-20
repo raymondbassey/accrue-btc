@@ -53,3 +53,13 @@ export function YieldReportCard({ loading }: { loading?: boolean }) {
               Report earned yield to update the vault share price. Only the strategist can perform this action.
             </p>
             <div></div>
+            <div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Yield amount (sBTC)"
+                  value={amount}
+                  onChange={e => setAmount(sanitizeBTCInput(e.target.value))}
+                  className={`text-right font-mono-financial text-sm ${hasError ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                  aria-label="Yield amount"
+                  aria-invalid={!!hasError}
+                />
