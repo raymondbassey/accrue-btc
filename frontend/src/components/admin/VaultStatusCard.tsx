@@ -51,3 +51,9 @@ export function VaultStatusCard({ loading }: { loading?: boolean }) {
             <Skeleton className="h-9 w-full" />
           </div>
         ) : (
+          >
+            <p className="mb-4 text-xs text-muted-foreground">
+              {paused
+                ? 'Vault is paused. All deposits and withdrawals are disabled.'
+                : 'Vault is active and accepting deposits and withdrawals.'}
+            </p>
