@@ -75,3 +75,9 @@ export function VaultStatusCard({ loading }: { loading?: boolean }) {
                   {paused ? 'Activate Vault' : 'Pause Vault'}
                 </Button>
               }
+              title={paused ? 'Activate Vault?' : 'Pause Vault?'}
+              description={
+                paused
+                  ? 'This will re-enable deposits and withdrawals for all users.'
+                  : 'Are you sure? All deposits and withdrawals will be disabled while the vault is paused.'
+              }
