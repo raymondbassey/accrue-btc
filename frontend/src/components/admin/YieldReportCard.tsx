@@ -14,3 +14,6 @@ import { Loader2 } from 'lucide-react';
 export function YieldReportCard({ loading }: { loading?: boolean }) {
   const [amount, setAmount] = useState('');
   const { execute, submitting } = useAdminAction();
+
+  const validation = amount ? isValidBTCAmount(amount) : { valid: false };
+  const hasError = amount && !validation.valid && validation.error;
