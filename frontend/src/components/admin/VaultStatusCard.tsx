@@ -11,3 +11,6 @@ import { Pause, Play, Loader2 } from 'lucide-react';
 export function VaultStatusCard({ loading }: { loading?: boolean }) {
   const { data: vaultInfo, isLoading } = useVaultInfo();
   const { execute, submitting } = useAdminAction();
+
+  const paused = vaultInfo?.paused ?? false;
+  const isDataLoading = loading || isLoading;
