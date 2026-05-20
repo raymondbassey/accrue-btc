@@ -48,3 +48,8 @@ export function YieldReportCard({ loading }: { loading?: boolean }) {
             <Skeleton className="h-9 w-full" />
           </>
         ) : (
+
+          <p className="text-xs text-muted-foreground">
+              Report earned yield to update the vault share price. Only the strategist can perform this action.
+            </p>
+            <div></div>
