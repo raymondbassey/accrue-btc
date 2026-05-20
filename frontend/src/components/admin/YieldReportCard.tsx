@@ -17,3 +17,9 @@ export function YieldReportCard({ loading }: { loading?: boolean }) {
 
   const validation = amount ? isValidBTCAmount(amount) : { valid: false };
   const hasError = amount && !validation.valid && validation.error;
+
+  const handleSubmit = () => {
+    const microAmount = toMicroUnits(parseFloat(amount));
+    execute('report-yield', [Cl.uint(microAmount)], `${amount} sBTC yield reported`);
+    setAmount('');
+  };
