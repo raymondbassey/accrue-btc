@@ -22,3 +22,12 @@ export function VaultStatusCard({ loading }: { loading?: boolean }) {
       `Vault ${paused ? 'activated' : 'paused'}`,
     );
   };
+
+  return (
+    <Card className="border-border bg-card" aria-busy={isDataLoading}>
+      <CardHeader className="flex flex-row items-center justify-between pb-3">
+        <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+          Vault Status
+        </CardTitle>
+        {isDataLoading ? (
+          <Skeleton className="h-5 w-16" />
