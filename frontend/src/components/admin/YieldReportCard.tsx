@@ -10,3 +10,7 @@ import { toMicroUnits } from '@/lib/contracts';
 import { useAdminAction } from '@/hooks/useAdminAction';
 import { Cl } from '@stacks/transactions';
 import { Loader2 } from 'lucide-react';
+
+export function YieldReportCard({ loading }: { loading?: boolean }) {
+  const [amount, setAmount] = useState('');
+  const { execute, submitting } = useAdminAction();
