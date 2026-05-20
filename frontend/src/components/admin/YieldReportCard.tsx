@@ -40,3 +40,11 @@ export function YieldReportCard({ loading }: { loading?: boolean }) {
           Report Yield
         </CardTitle>
       </CardHeader>
+
+      <CardContent className="space-y-4">
+        {loading ? (
+          <>
+            <Skeleton className="h-3 w-3/4" />
+            <Skeleton className="h-9 w-full" />
+          </>
+        ) : (
