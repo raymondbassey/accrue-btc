@@ -14,3 +14,11 @@ export function VaultStatusCard({ loading }: { loading?: boolean }) {
 
   const paused = vaultInfo?.paused ?? false;
   const isDataLoading = loading || isLoading;
+
+  const toggle = () => {
+    execute(
+      'set-paused',
+      [Cl.bool(!paused)],
+      `Vault ${paused ? 'activated' : 'paused'}`,
+    );
+  };
