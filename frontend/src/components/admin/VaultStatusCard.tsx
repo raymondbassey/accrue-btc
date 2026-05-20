@@ -7,3 +7,7 @@ import { useVaultInfo } from '@/hooks/useContractReads';
 import { useAdminAction } from '@/hooks/useAdminAction';
 import { Cl } from '@stacks/transactions';
 import { Pause, Play, Loader2 } from 'lucide-react';
+
+export function VaultStatusCard({ loading }: { loading?: boolean }) {
+  const { data: vaultInfo, isLoading } = useVaultInfo();
+  const { execute, submitting } = useAdminAction();
