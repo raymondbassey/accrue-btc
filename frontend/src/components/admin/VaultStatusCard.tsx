@@ -51,7 +51,7 @@ export function VaultStatusCard({ loading }: { loading?: boolean }) {
             <Skeleton className="h-9 w-full" />
           </div>
         ) : (
-          >
+          <>
             <p className="mb-4 text-xs text-muted-foreground">
               {paused
                 ? 'Vault is paused. All deposits and withdrawals are disabled.'
@@ -81,3 +81,14 @@ export function VaultStatusCard({ loading }: { loading?: boolean }) {
                   ? 'This will re-enable deposits and withdrawals for all users.'
                   : 'Are you sure? All deposits and withdrawals will be disabled while the vault is paused.'
               }
+              confirmLabel={paused ? 'Activate' : 'Pause Vault'}
+              variant={paused ? 'default' : 'destructive'}
+              loading={submitting}
+              onConfirm={toggle}
+            />
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
