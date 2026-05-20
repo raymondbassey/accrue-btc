@@ -65,3 +65,13 @@ export function VaultStatusCard({ loading }: { loading?: boolean }) {
                   className="w-full"
                   disabled={submitting}
                 >
+                  {submitting ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : paused ? (
+                    <Play className="mr-2 h-4 w-4" />
+                  ) : (
+                    <Pause className="mr-2 h-4 w-4" />
+                  )}
+                  {paused ? 'Activate Vault' : 'Pause Vault'}
+                </Button>
+              }
